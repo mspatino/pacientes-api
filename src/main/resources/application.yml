@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: pacientes-api
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/pacientes_db?useSSL=false&serverTimezone=UTC    
+    username: pacientes_user
+    password: pacientes123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # o validate si ya creaste las tablas
+    show-sql: true
+    properties:
+      hibernate:
+        'format_sql' : true
+    
+ 
+  devtools:
+    restart:
+      enabled: true  
+       
+      
+    
+
+    
+        
+
+
+
+
+    
+
+            
+
+
+    
