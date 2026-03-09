@@ -1,8 +1,12 @@
 package com.consultorio.pacientes.services.impl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +16,7 @@ import com.consultorio.pacientes.entities.Paciente;
 import com.consultorio.pacientes.repositories.HistoriaClinicaRepository;
 import com.consultorio.pacientes.repositories.PacienteRepository;
 import com.consultorio.pacientes.services.HistoriaClinicaService;
+import com.consultorio.pacientes.specifications.HistoriaClinicaSpecification;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -124,5 +129,38 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
     public Optional<HistoriaClinica> obtenerPorId(Long id) {
         return historiaRepo.findById(id);
     }
+
+
+    @Override
+    public Page<HistoriaClinica> buscarHistorias(String dni, String nombre, String apellido, Boolean activa,
+            LocalDate desde, LocalDate hasta, Pageable pageable) {
+    return historiaRepo.buscarHistorias(dni, nombre, apellido, activa, desde, hasta, pageable);
+    }
+
+        @Override
+    public Page<HistoriaClinica> buscar(
+            String dni,
+            String nombre,
+            String apellido,
+            Boolean activa,
+            LocalDate desde,
+            LocalDate hasta,
+            Pageable pageable) {
+
+        Specification<HistoriaClinica> spec = Specification
+                .where(HistoriaClinicaSpecification.dniPaciente(dni))
+                .and(HistoriaClinicaSpecification.nombrePaciente(nombre))
+                .and(HistoriaClinicaSpecification.apellidoPaciente(apellido))
+                .and(HistoriaClinicaSpecification.activa(activa))
+                .and(HistoriaClinicaSpecification.fechaDesde(desde))
+                .and(HistoriaClinicaSpecification.fechaHasta(hasta));
+
+        return historiaRepo.findAll(spec, pageable);
+    }
+
+
+
+
+
 
 }

@@ -1,9 +1,12 @@
 package com.consultorio.pacientes.controllers;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -104,37 +107,18 @@ public class HistoriaClinicaController {
             .orElse(ResponseEntity.notFound().build()); //404 not found
     }
 
-
-    // Listar historias activas o inactivas
-    @GetMapping("/activa/{activa}")
-    public ResponseEntity<List<HistoriaClinica>> listarPorActiva(@PathVariable Boolean activa) {
-        return ResponseEntity.ok(serviceHistoria.listarPorActiva(activa));
-    }
-
-    // Listar historias por rango de fechas
-    @GetMapping("/rango-fechas")
-    public ResponseEntity<List<HistoriaClinica>> listarPorRango(
-            @RequestParam("desde") String desdeStr,
-            @RequestParam("hasta") String hastaStr) {
-
-        LocalDateTime desde = LocalDateTime.parse(desdeStr);
-        LocalDateTime hasta = LocalDateTime.parse(hastaStr);
-
-        return ResponseEntity.ok(serviceHistoria.listarPorRangoFecha(desde, hasta));
-    }
-
-    // Búsqueda por paciente
     @GetMapping("/buscar")
-    public ResponseEntity<List<HistoriaClinica>> buscarPorPaciente(
+    public Page<HistoriaClinica> buscarHistorias(
+            @RequestParam(required = false) String dni,
             @RequestParam(required = false) String nombre,
             @RequestParam(required = false) String apellido,
-            @RequestParam(required = false) String dni) {
+            @RequestParam(required = false) Boolean activa,
+            @RequestParam(required = false) LocalDate desde,
+            @RequestParam(required = false) LocalDate hasta,
+            Pageable pageable
+    ) {
 
-        if (dni != null) return ResponseEntity.ok(serviceHistoria.listarPorDniPaciente(dni));
-        if (nombre != null) return ResponseEntity.ok(serviceHistoria.listarPorNombrePaciente(nombre));
-        if (apellido != null) return ResponseEntity.ok(serviceHistoria.listarPorApellidoPaciente(apellido));
-
-        return ResponseEntity.badRequest().build();
+        return serviceHistoria.buscarHistorias(dni,nombre,apellido,activa,desde,hasta,pageable);
     }
 
         
