@@ -1,8 +1,6 @@
 package com.consultorio.pacientes.controllers;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;

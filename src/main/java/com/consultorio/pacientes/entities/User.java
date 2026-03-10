@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
@@ -34,6 +36,7 @@ public class User {
     @NotBlank
     private String password;
 
+    @Column(nullable = false)
     private Boolean enabled;
 
     @Transient
@@ -52,8 +55,10 @@ public class User {
         inverseJoinColumns =  {@JoinColumn(name="role_id")},
         uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id","role_id"})}
     )
-
     private List<Role> roles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<RefreshToken> refreshTokens;
 
         public Long getId() {
         return id;
@@ -111,4 +116,13 @@ public class User {
         this.roles = roles;
     }
 
+    public List<RefreshToken> getRefreshTokens() {
+        return refreshTokens;
+    }
+
+    public void setRefreshTokens(List<RefreshToken> refreshTokens) {
+        this.refreshTokens = refreshTokens;
+    }
+
+    
 }
