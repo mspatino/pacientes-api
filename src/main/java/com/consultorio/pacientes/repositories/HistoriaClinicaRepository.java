@@ -20,26 +20,26 @@ public interface HistoriaClinicaRepository extends JpaRepository<HistoriaClinica
 
     boolean existsByPacienteId(Long pacienteId);
 
-    Page<HistoriaClinica> findByActiva(Boolean activa);
-        @Query("""
-        SELECT h
-        FROM HistoriaClinica h
-        JOIN h.paciente p
-        WHERE (:dni IS NULL OR p.dni = :dni)
-        AND (:nombre IS NULL OR LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%')))
-        AND (:apellido IS NULL OR LOWER(p.apellido) LIKE LOWER(CONCAT('%', :apellido, '%')))
-        AND (:activa IS NULL OR h.activa = :activa)
-        AND (:desde IS NULL OR h.fechaAlta >= :desde)
-        AND (:hasta IS NULL OR h.fechaAlta <= :hasta)
-    """)
-    Page<HistoriaClinica> buscarHistorias(
-            @Param("dni") String dni,
-            @Param("nombre") String nombre,
-            @Param("apellido") String apellido,
-            @Param("activa") Boolean activa,
-            @Param("desde") LocalDate desde,
-            @Param("hasta") LocalDate hasta,
-            Pageable pageable
-    );
+     Page<HistoriaClinica> findByActivaTrue(Pageable pageable);
+
+     @Query("""
+                 SELECT h
+                 FROM HistoriaClinica h
+                 JOIN h.paciente p
+                 WHERE (:dni IS NULL OR p.dni = :dni)
+                 AND (:nombre IS NULL OR LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%')))
+                 AND (:apellido IS NULL OR LOWER(p.apellido) LIKE LOWER(CONCAT('%', :apellido, '%')))
+                 AND (:activa IS NULL OR h.activa = :activa)
+                 AND (:desde IS NULL OR h.fechaAlta >= :desde)
+                 AND (:hasta IS NULL OR h.fechaAlta <= :hasta)
+             """)
+     Page<HistoriaClinica> buscarHistorias(
+             @Param("dni") String dni,
+             @Param("nombre") String nombre,
+             @Param("apellido") String apellido,
+             @Param("activa") Boolean activa,
+             @Param("desde") LocalDate desde,
+             @Param("hasta") LocalDate hasta,
+             Pageable pageable);
 
 }

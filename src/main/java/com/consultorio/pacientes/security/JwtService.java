@@ -19,12 +19,12 @@ public class JwtService {
     }
 
     public String generateToken(String username) {
-
+   //duracion del token 12 hs
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(
-                        new Date(System.currentTimeMillis() + 1000 * 60 * 15))
+                        new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 12))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

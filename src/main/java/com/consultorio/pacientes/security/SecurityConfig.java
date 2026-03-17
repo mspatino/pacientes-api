@@ -1,5 +1,6 @@
 package com.consultorio.pacientes.security;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,13 @@ public class SecurityConfig {
     }
 
     @Bean
+    CommandLineRunner test(PasswordEncoder encoder) {
+        return args -> {
+           System.out.println("BCrypt 1234 = " + encoder.encode("1234"));
+    };
+}
+
+    @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtService, userDetailsService);
     }
@@ -51,6 +59,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/api/diagnosticos/**").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
             )

@@ -7,6 +7,8 @@ import lombok.Setter;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -20,9 +22,7 @@ public class HistoriaClinica {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//     @JoinColumn(name = "paciente_id", nullable = false)
-    // Una historia clínica pertenece a un solo pacient
+    // Una historia clínica pertenece a un solo paciente
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "paciente_id", nullable = false, unique = true)
     private Paciente paciente;
@@ -30,8 +30,8 @@ public class HistoriaClinica {
     @Column(nullable = false)
     private LocalDateTime fechaAlta;
 
-    // @OneToMany(cascade = CascadeType.ALL)
-    // private List<Diagnostico> diagnosticos;
+    @OneToMany(mappedBy = "historiaClinica", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Diagnostico> diagnosticos = new ArrayList<>();
 
     @Column(length = 4000)
     private String motivoConsulta;
@@ -41,5 +41,11 @@ public class HistoriaClinica {
 
     @Column(nullable = false)
     private Boolean activa = true;
+
+    @PrePersist
+    public void prePersist() {
+    this.fechaAlta = LocalDateTime.now();
+    }
+
 }
 

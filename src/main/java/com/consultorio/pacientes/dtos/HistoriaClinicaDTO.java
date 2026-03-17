@@ -1,43 +1,19 @@
 package com.consultorio.pacientes.dtos;
 
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
 public class HistoriaClinicaDTO {
 
+    @NotBlank(message = "El motivo de consulta es obligatorio")
     private String motivoConsulta;
     private String observaciones;
-   private Boolean activa; // wrapper para permitir null
-
-    public HistoriaClinicaDTO() {}
-
-   public HistoriaClinicaDTO(String motivoConsulta, String observaciones, Boolean activa) {
-        this.motivoConsulta = motivoConsulta;
-        this.observaciones = observaciones;
-        this.activa=activa;
-    }
-
-    public String getMotivoConsulta() {
-        return motivoConsulta;
-    }
-
-    public void setMotivoConsulta(String motivoConsulta) {
-        this.motivoConsulta = motivoConsulta;
-    }
-
-    public String getObservaciones() {
-        return observaciones;
-    }
-
-    public void setObservaciones(String observaciones) {
-        this.observaciones = observaciones;
-    }
-
-    public Boolean getActiva() {
-        return activa;
-    }
-
-    public void setActiva(Boolean activa) {
-        this.activa = activa;
-    }
-
+    private Boolean activa; // wrapper para permitir null
     
 
 }

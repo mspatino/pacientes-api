@@ -5,14 +5,19 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.consultorio.pacientes.dtos.HistoriaClinicaDTO;
+import com.consultorio.pacientes.dtos.HistoriaClinicaResponseDTO;
 import com.consultorio.pacientes.entities.HistoriaClinica;
 import com.consultorio.pacientes.entities.Paciente;
+import com.consultorio.pacientes.exception.BusinessException;
+import com.consultorio.pacientes.exception.ResourceNotFoundException;
+import com.consultorio.pacientes.mapper.HistoriaClinicaMapper;
 import com.consultorio.pacientes.repositories.HistoriaClinicaRepository;
 import com.consultorio.pacientes.repositories.PacienteRepository;
 import com.consultorio.pacientes.services.HistoriaClinicaService;
@@ -37,90 +42,30 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
         this.pacienteRepo = pacienteRepo;
 }
 
-        public HistoriaClinica crearHistoria(Long pacienteId, HistoriaClinicaDTO dto) {
 
-        Paciente paciente = pacienteRepo.findById(pacienteId)
-                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+    public HistoriaClinicaResponseDTO crearHistoriaClinica(Long pacienteId, HistoriaClinicaDTO dto) {
 
-          // Verificar si ya tiene historia clínica
-        if (historiaRepo.existsByPacienteId(pacienteId)) {
-            throw new RuntimeException("El paciente ya tiene historia clínica");
-        }
+    Paciente paciente = pacienteRepo.findById(pacienteId)
+            .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado"));
 
-        System.out.println("=== Datos del Paciente ===");
-        System.out.println("ID: " + paciente.getId());
-        System.out.println("Nombre: " + paciente.getNombre());
-        System.out.println("Apellido: " + paciente.getApellido());
-        System.out.println("DNI: " + paciente.getDni());
-        System.out.println("Dirección: " + paciente.getDireccion());
-        System.out.println("Teléfono: " + paciente.getTelefono());
-        System.out.println("Ocupación: " + paciente.getOcupacion());
-        System.out.println("Fecha de nacimiento: " + paciente.getFechaNacimiento());
-        System.out.println("Fecha de alta: " + paciente.getFechaAlta());
-        System.out.println("==========================");
-
-        HistoriaClinica historia = new HistoriaClinica();
-        historia.setPaciente(paciente);
-        historia.setFechaAlta(LocalDateTime.now());
-        historia.setActiva(true);
-
-        // Campos del DTO
-        historia.setMotivoConsulta(dto.getMotivoConsulta());
-        historia.setObservaciones(dto.getObservaciones());    
-          // default segura
-        historia.setActiva(
-            dto.getActiva() != null ? dto.getActiva() : true
-        );
-      
-
-        return historiaRepo.save(historia);
+    // VALIDACIÓN CLAVE: para evitar explotar con excepción SQL 
+    // no es una respuesta limpia para la API
+    if (historiaRepo.existsByPacienteId(pacienteId)) {
+        throw new BusinessException("El paciente ya tiene una historia clínica");
     }
+    HistoriaClinica historia = new HistoriaClinica();
+    historia.setPaciente(paciente);
+    //historia.setFechaAlta(LocalDateTime.now());
+    historia.setMotivoConsulta(dto.getMotivoConsulta());
+    historia.setObservaciones(dto.getObservaciones());
+    historia.setActiva(dto.getActiva() != null ? dto.getActiva() : true);
 
-    @Transactional
-    public HistoriaClinica actualizarHistoria(Long historiaId, HistoriaClinicaDTO dto) {
+    HistoriaClinica saved = historiaRepo.save(historia);
 
-        HistoriaClinica historia = historiaRepo.findById(historiaId)
-                .orElseThrow(() -> new RuntimeException("Historia clínica no encontrada"));
+    return HistoriaClinicaMapper.toDTO(saved);
+}
 
-        boolean actualizado = false;                
 
-        if (dto.getMotivoConsulta() != null) {
-            historia.setMotivoConsulta(dto.getMotivoConsulta());
-            actualizado = true;
-        }
-
-        if (dto.getObservaciones() != null) {
-            historia.setObservaciones(dto.getObservaciones());
-            actualizado = true;
-        }
-
-        if (dto.getActiva() != null) {
-            historia.setActiva(dto.getActiva());
-            actualizado = true;
-        }
-
-        if (!actualizado) {
-            throw new IllegalArgumentException("No se enviaron campos para actualizar");
-        }
-        
-        return historiaRepo.save(historia);
-    }
-
-    @Transactional
-    public HistoriaClinica cerrarHistoria(Long historiaId) {
-
-    HistoriaClinica historia = historiaRepo.findById(historiaId)
-        .orElseThrow(() -> new EntityNotFoundException("Historia clínica no encontrada"));
-
-    if (!historia.getActiva()) {
-        throw new IllegalStateException("La historia clínica ya está cerrada");
-    }
-
-    historia.setActiva(false);
-    return historiaRepo.save(historia);
-    }
-
-    
       // Obtener la historia clínica de un paciente
     public Optional<HistoriaClinica> obtenerHistoriaPorPaciente(Long pacienteId) {
         return historiaRepo.findByPacienteId(pacienteId);
@@ -137,7 +82,9 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
     return historiaRepo.buscarHistorias(dni, nombre, apellido, activa, desde, hasta, pageable);
     }
 
-        @Override
+    
+    
+    @Override
     public Page<HistoriaClinica> buscar(
             String dni,
             String nombre,
@@ -158,6 +105,60 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
         return historiaRepo.findAll(spec, pageable);
     }
 
+    @Override
+    public Page<HistoriaClinica> listarActivas(int page, int size) {
+       Pageable pageable = PageRequest.of(page, size);
+
+        return historiaRepo.findByActivaTrue(pageable);
+        
+    }
+
+    @Transactional
+    public HistoriaClinicaResponseDTO actualizarHistoriaClinica(Long historiaId, HistoriaClinicaDTO dto) {
+           
+    HistoriaClinica historia = historiaRepo.findById(historiaId)
+            .orElseThrow(() -> new RuntimeException("Historia clínica no encontrada"));
+
+    boolean actualizado = false;
+
+    if (dto.getMotivoConsulta() != null) {
+        historia.setMotivoConsulta(dto.getMotivoConsulta());
+        actualizado = true;
+    }
+
+    if (dto.getObservaciones() != null) {
+        historia.setObservaciones(dto.getObservaciones());
+        actualizado = true;
+    }
+
+    if (dto.getActiva() != null) {
+        historia.setActiva(dto.getActiva());
+        actualizado = true;
+    }
+
+    if (!actualizado) {
+        throw new IllegalArgumentException("No se enviaron campos para actualizar");
+    }
+
+    HistoriaClinica saved = historiaRepo.save(historia);
+
+    return HistoriaClinicaMapper.toDTO(saved);
+    }
+
+    @Transactional
+    public HistoriaClinicaResponseDTO cerrarHistoriaClinica(Long historiaId) {
+        HistoriaClinica historia = historiaRepo.findById(historiaId)
+                .orElseThrow(() -> new EntityNotFoundException("Historia clínica no encontrada"));
+
+        if (!historia.getActiva()) {
+            throw new IllegalStateException("La historia clínica ya está cerrada");
+        }
+
+        historia.setActiva(false);
+
+        HistoriaClinica saved = historiaRepo.save(historia);
+        return HistoriaClinicaMapper.toDTO(saved);
+    }
 
 
 

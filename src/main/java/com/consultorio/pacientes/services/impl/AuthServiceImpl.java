@@ -12,11 +12,12 @@ import com.consultorio.pacientes.entities.RefreshToken;
 import com.consultorio.pacientes.entities.User;
 import com.consultorio.pacientes.repositories.UserRepository;
 import com.consultorio.pacientes.security.JwtService;
+import com.consultorio.pacientes.services.AuthService;
 import com.consultorio.pacientes.services.RefreshTokenService;
 
 
 @Service
-public class AuthServiceImpl {
+public class AuthServiceImpl implements AuthService{
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;

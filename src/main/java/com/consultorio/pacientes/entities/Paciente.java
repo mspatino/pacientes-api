@@ -14,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -55,11 +56,13 @@ public class Paciente {
     @Column(nullable = false)
     private LocalDateTime fechaAlta;
 
-    // @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL)
-    // private List<HistoriaClinica> historiasClinicas = new ArrayList<>();
-
     @OneToOne(mappedBy = "paciente", fetch = FetchType.LAZY)
     @JsonIgnore
     private HistoriaClinica historiaClinica;
+
+    @PrePersist
+    public void prePersist() {
+    this.fechaAlta = LocalDateTime.now();
+    }
 
 }

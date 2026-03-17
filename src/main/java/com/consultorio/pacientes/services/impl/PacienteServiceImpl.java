@@ -2,11 +2,15 @@ package com.consultorio.pacientes.services.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+
 
 import org.springframework.stereotype.Service;
 
+import com.consultorio.pacientes.dtos.PacienteDTO;
+import com.consultorio.pacientes.dtos.PacienteResponseDTO;
 import com.consultorio.pacientes.entities.Paciente;
+import com.consultorio.pacientes.exception.ResourceNotFoundException;
+import com.consultorio.pacientes.mapper.PacienteMapper;
 import com.consultorio.pacientes.repositories.PacienteRepository;
 import com.consultorio.pacientes.services.PacienteService;
 
@@ -26,9 +30,16 @@ public class PacienteServiceImpl implements PacienteService {
 
     }
 
+    public PacienteResponseDTO crear(PacienteDTO dto) {
+        Paciente saved = repository.save(PacienteMapper.toEntity(dto));
+        return PacienteMapper.toDTO(saved);
+    }
 
-    public Optional<Paciente> actualizar(Long id, Paciente datos) {
-    return repository.findById(id).map(paciente -> {
+
+    public PacienteResponseDTO actualizar(Long id, PacienteDTO datos) {
+      
+    Paciente paciente = repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado"));
 
         if (datos.getNombre() != null) {
             paciente.setNombre(datos.getNombre());
@@ -52,9 +63,10 @@ public class PacienteServiceImpl implements PacienteService {
             paciente.setFechaNacimiento(datos.getFechaNacimiento());
         }
 
+        Paciente saved = repository.save(paciente);
+
         // NO tocamos fechaAlta
-        return repository.save(paciente);
-    });
+        return PacienteMapper.toDTO(saved)  ;
 }
 
     public boolean eliminar(Long id) {
@@ -65,12 +77,23 @@ public class PacienteServiceImpl implements PacienteService {
         return false;
     }
 
-    public List<Paciente> listarTodos() {
-        return repository.findAll();
+    // public List<Paciente> listarTodos() {
+    //     return repository.findAll();
+    // }
+public List<PacienteResponseDTO> listarTodos() {
+    //   return repository.findAll()
+    //         .stream()
+    //         .map(PacienteMapper::toDTO)
+    //         .toList();
+    return PacienteMapper.toDTOList(repository.findAll());
     }
 
-    public Optional<Paciente> obtenerPorId(Long id) {
-        return repository.findById(id);
-    }
+
+    public PacienteResponseDTO obtenerPorId(Long id) {
+    Paciente paciente = repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado"));
+
+    return PacienteMapper.toDTO(paciente);
+}
 
 }

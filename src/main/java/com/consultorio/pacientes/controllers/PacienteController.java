@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.consultorio.pacientes.entities.Paciente;
+import com.consultorio.pacientes.dtos.PacienteDTO;
+import com.consultorio.pacientes.dtos.PacienteResponseDTO;
 import com.consultorio.pacientes.services.PacienteService;
+
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -27,26 +30,21 @@ public class PacienteController {
         this.service = service;
     }
 
-        // Crear un paciente
-    // @PostMapping
-    // public Paciente crearPaciente(@RequestBody Paciente paciente) {
-    //     return service.guardar(paciente);
-    // }
-
     @PostMapping
-    public ResponseEntity<Paciente> crearPaciente(@RequestBody Paciente paciente) {
-    Paciente guardado = service.guardar(paciente);
-    return ResponseEntity.status(HttpStatus.CREATED).body(guardado); // 201 Created
-    }
+    public ResponseEntity<PacienteResponseDTO> crearPaciente(
+        @Valid @RequestBody PacienteDTO dto) {
+
+    PacienteResponseDTO guardado = service.crear(dto);
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(guardado);
+}
 
     @PutMapping("/{id}")
-    public ResponseEntity<Paciente> actualizarPaciente(
+    public ResponseEntity<PacienteResponseDTO> actualizarPaciente(
                 @PathVariable Long id,
-                @RequestBody Paciente paciente) {
+                @RequestBody PacienteDTO paciente) {
 
-            return service.actualizar(id, paciente)
-                    .map(p -> ResponseEntity.ok(p))          // 200 OK
-                    .orElse(ResponseEntity.notFound().build()); // 404
+    return ResponseEntity.ok(service.actualizar(id, paciente));
     }
 
     @DeleteMapping("/{id}")
@@ -59,18 +57,14 @@ public class PacienteController {
 
 
     @GetMapping
-    public ResponseEntity<List<Paciente>> listarPacientes() {
-        List<Paciente> pacientes = service.listarTodos();
+    public ResponseEntity<List<PacienteResponseDTO>> listarPacientes() {
+        List<PacienteResponseDTO> pacientes = service.listarTodos();
         return ResponseEntity.ok(pacientes); // 200 OK + lista
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Paciente> obtenerPaciente(@PathVariable Long id) {
-    return service.obtenerPorId(id)
-            .map(p -> ResponseEntity.ok(p))         // 200 OK
-            .orElse(ResponseEntity.notFound().build()); // 404 Not Found
-}
-
-
+    public ResponseEntity<PacienteResponseDTO> obtenerPaciente(@PathVariable Long id) {
+        return ResponseEntity.ok(service.obtenerPorId(id));
+    }
 
 }

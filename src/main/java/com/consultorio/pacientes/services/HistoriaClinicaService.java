@@ -7,19 +7,28 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.consultorio.pacientes.dtos.HistoriaClinicaDTO;
+import com.consultorio.pacientes.dtos.HistoriaClinicaResponseDTO;
 import com.consultorio.pacientes.entities.HistoriaClinica;
 
 public interface HistoriaClinicaService {
 
-    public HistoriaClinica crearHistoria(Long pacienteId, HistoriaClinicaDTO dto) ;
+    //public HistoriaClinica crearHistoria(Long pacienteId, HistoriaClinicaDTO dto) ;
+
+    public HistoriaClinicaResponseDTO crearHistoriaClinica(Long pacienteId, HistoriaClinicaDTO dto);
    
-    public HistoriaClinica actualizarHistoria(Long historiaId, HistoriaClinicaDTO dto) ;
+    //public HistoriaClinica actualizarHistoria(Long historiaId, HistoriaClinicaDTO dto) ;
+
+    public HistoriaClinicaResponseDTO actualizarHistoriaClinica(Long historiaId, HistoriaClinicaDTO dto);
    
-    public HistoriaClinica cerrarHistoria(Long historiaId) ;
+    //public HistoriaClinica cerrarHistoria(Long historiaId) ;
+    
+    public HistoriaClinicaResponseDTO cerrarHistoriaClinica(Long historiaId) ;
 
     public Optional<HistoriaClinica> obtenerHistoriaPorPaciente(Long pacienteId);
 
     public Optional<HistoriaClinica> obtenerPorId(Long id);
+
+    Page<HistoriaClinica> listarActivas(int page, int size);
 
     //Esto permite hacer búsquedas:por DNI,por nombre,por apellido,por estado (activa),por rango de fechas, todo en una sola consulta
 

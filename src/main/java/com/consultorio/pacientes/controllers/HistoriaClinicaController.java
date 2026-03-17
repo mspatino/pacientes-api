@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.consultorio.pacientes.dtos.HistoriaClinicaDTO;
+import com.consultorio.pacientes.dtos.HistoriaClinicaResponseDTO;
 import com.consultorio.pacientes.entities.HistoriaClinica;
 import com.consultorio.pacientes.services.HistoriaClinicaService;
 import com.consultorio.pacientes.services.impl.HistoriaClinicaServiceImpl;
@@ -34,17 +35,26 @@ public class HistoriaClinicaController {
     }
 
         // Crear historia clínica
+    // @PostMapping("/paciente/{pacienteId}")
+    // public ResponseEntity<HistoriaClinica> crearHistoria(
+    //         @PathVariable Long pacienteId,
+    //         @RequestBody HistoriaClinicaDTO dto) {
+    //     try {
+    //         HistoriaClinica historia = serviceHistoria.crearHistoria(pacienteId, dto);
+    //         return ResponseEntity.status(HttpStatus.CREATED).body(historia);
+    //     } catch (RuntimeException e) {
+    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    //                              .body(null);
+    //     }
+    // }
+
     @PostMapping("/paciente/{pacienteId}")
-    public ResponseEntity<HistoriaClinica> crearHistoria(
-            @PathVariable Long pacienteId,
-            @RequestBody HistoriaClinicaDTO dto) {
-        try {
-            HistoriaClinica historia = serviceHistoria.crearHistoria(pacienteId, dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(historia);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                 .body(null);
-        }
+    public ResponseEntity<HistoriaClinicaResponseDTO> crearHistoria(
+        @PathVariable Long pacienteId,
+        @RequestBody HistoriaClinicaDTO dto) {
+
+    HistoriaClinicaResponseDTO historia = serviceHistoria.crearHistoriaClinica(pacienteId, dto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(historia);
     }
 
 
@@ -53,8 +63,8 @@ public class HistoriaClinicaController {
             @PathVariable Long historiaId,
             @RequestBody HistoriaClinicaDTO dto) {
         try {
-            HistoriaClinica historia = serviceHistoria.actualizarHistoria(historiaId, dto);
-            return ResponseEntity.status(HttpStatus.OK).body(historia);
+            HistoriaClinicaResponseDTO historiaActualizada = serviceHistoria.actualizarHistoriaClinica(historiaId, dto);
+            return ResponseEntity.status(HttpStatus.OK).body(historiaActualizada);
         }
          catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -75,7 +85,8 @@ public class HistoriaClinicaController {
     public ResponseEntity<?> cerrarHistoria(@PathVariable Long id) {
 
     try {
-        HistoriaClinica historia = serviceHistoria.cerrarHistoria(id);
+        HistoriaClinicaResponseDTO historia = serviceHistoria.cerrarHistoriaClinica(id);
+        
         return ResponseEntity.ok(historia);
 
     } catch (EntityNotFoundException e) {

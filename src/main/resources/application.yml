@@ -7,22 +7,29 @@ spring:
     username: pacientes_user
     password: pacientes123
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+      idle-timeout: 30000
+      max-lifetime: 1800000  
 
   jpa:
     hibernate:
-      ddl-auto: update  # o validate si ya creaste las tablas
+      ddl-auto: update
     show-sql: true
+    database-platform: org.hibernate.dialect.MySQLDialect
     properties:
       hibernate:
-        'format_sql' : true
-    
- 
+        format_sql: true
+
   devtools:
     restart:
       enabled: true  
        
       
-    
+logging:
+  level:
+    org.springframework.security: DEBUG    
 
     
         
