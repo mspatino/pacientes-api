@@ -13,6 +13,8 @@ public interface DiagnosticoService {
             
     public List<DiagnosticoResponseDTO> listarPorHistoria(Long historiaId);    
     public DiagnosticoResponseDTO obtenerPrincipal(Long historiaId);
-    public DiagnosticoResponseDTO actualizaeDiagnostico(
+    public DiagnosticoResponseDTO actualizarDiagnostico(
             Long diagnosticoId, DiagnosticoDTO diagnostico);
+
+    public void eliminarDiagnostico(Long diagnosticoId);
 }

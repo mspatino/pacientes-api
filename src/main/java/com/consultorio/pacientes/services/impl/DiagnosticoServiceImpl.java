@@ -103,7 +103,7 @@ public class DiagnosticoServiceImpl implements DiagnosticoService{
     }
 
     @Override
-    public DiagnosticoResponseDTO actualizaeDiagnostico(Long diagnosticoId, DiagnosticoDTO dto) {
+    public DiagnosticoResponseDTO actualizarDiagnostico(Long diagnosticoId, DiagnosticoDTO dto) {
         Diagnostico diag = diagnosticoRepository.findById(diagnosticoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Diagnóstico no encontrado"));
 
@@ -132,6 +132,14 @@ public class DiagnosticoServiceImpl implements DiagnosticoService{
 
         Diagnostico updated = diagnosticoRepository.save(diag);
         return DiagnosticoMapper.toDTO(updated);
+    }
+
+    @Override
+    public void eliminarDiagnostico(Long diagnosticoId) {
+        if (!diagnosticoRepository.existsById(diagnosticoId)) {
+            throw new ResourceNotFoundException("Diagnóstico no encontrado");
+        }
+        diagnosticoRepository.deleteById(diagnosticoId);
     }
 
 

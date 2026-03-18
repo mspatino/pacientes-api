@@ -70,26 +70,11 @@ public class DiagnosticoController {
         return ResponseEntity.ok(actualizado);
     }
 
-//ABAJO
-//..................
-  
-    // @PostMapping("/historia/{historiaId}")
-    // public ResponseEntity<DiagnosticoResponseDTO> crearDiagnostico(
-    //         @PathVariable Long historiaId,
-    //         @Valid @RequestBody DiagnosticoDTO dto) {
-
-    //     DiagnosticoResponseDTO diagnostico = service.crearDiagnostico(historiaId, dto);
-    //     return ResponseEntity.status(HttpStatus.CREATED).body(diagnostico);
-    // }
-
-
-
-
-    // // 5️⃣ Eliminar un diagnóstico
-    // @DeleteMapping("/{diagnosticoId}")
-    // public ResponseEntity<Void> eliminarDiagnostico(@PathVariable Long diagnosticoId) {
-    //     service.eliminarDiagnostico(diagnosticoId);
-    //     return ResponseEntity.noContent().build();
-    // }
+    //Eliminar un diagnóstico
+    @DeleteMapping("/{diagnosticoId}")
+    public ResponseEntity<Void> eliminarDiagnostico(@PathVariable Long diagnosticoId) {
+        diagnosticoService.eliminarDiagnostico(diagnosticoId);
+        return ResponseEntity.noContent().build();
+    }
 
 }
