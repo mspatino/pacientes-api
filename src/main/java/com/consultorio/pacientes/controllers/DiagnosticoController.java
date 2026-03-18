@@ -29,7 +29,7 @@ public class DiagnosticoController {
         this.diagnosticoService = diagnosticoService;
     }
 
-      // 1️⃣ Crear un nuevo diagnóstico
+      //Crear un nuevo diagnóstico
     @PostMapping("/historia/{historiaId}")
     public ResponseEntity<DiagnosticoResponseDTO> crearDiagnostico(
             @PathVariable Long historiaId,
@@ -42,7 +42,7 @@ public class DiagnosticoController {
                 
 }
 
-    // 2️⃣ Listar todos los diagnósticos de una historia clínica
+    // Listar todos los diagnósticos de una historia clínica
     @GetMapping("/historia/{historiaId}")
     public ResponseEntity<List<DiagnosticoResponseDTO>> listarPorHistoria(
             @PathVariable Long historiaId) {
@@ -51,13 +51,23 @@ public class DiagnosticoController {
         return ResponseEntity.ok(lista);
     }
 
-    //3️⃣ Obtener el diagnóstico principal de una historia clínica
+    //Obtener el diagnóstico principal de una historia clínica
     @GetMapping("/historia/{historiaId}/principal")
     public ResponseEntity<DiagnosticoResponseDTO> obtenerPrincipal(
             @PathVariable Long historiaId) {
 
         DiagnosticoResponseDTO principal = diagnosticoService.obtenerPrincipal(historiaId);
         return ResponseEntity.ok(principal);
+    }
+
+    //Actualizar un diagnóstico existente
+    @PutMapping("/{diagnosticoId}")
+    public ResponseEntity<DiagnosticoResponseDTO> actualizarDiagnostico(
+            @PathVariable Long diagnosticoId,
+            @Valid @RequestBody DiagnosticoDTO dto) {
+
+        DiagnosticoResponseDTO actualizado = diagnosticoService.actualizarDiagnostico(diagnosticoId, dto);
+        return ResponseEntity.ok(actualizado);
     }
 
 //ABAJO
@@ -72,33 +82,8 @@ public class DiagnosticoController {
     //     return ResponseEntity.status(HttpStatus.CREATED).body(diagnostico);
     // }
 
-    // // 2️⃣ Listar todos los diagnósticos de una historia clínica
-    // @GetMapping("/historia/{historiaId}")
-    // public ResponseEntity<List<DiagnosticoResponseDTO>> listarPorHistoria(
-    //         @PathVariable Long historiaId) {
 
-    //     List<DiagnosticoResponseDTO> lista = service.listarPorHistoria(historiaId);
-    //     return ResponseEntity.ok(lista);
-    // }
 
-    // // 3️⃣ Obtener el diagnóstico principal de una historia clínica
-    // @GetMapping("/historia/{historiaId}/principal")
-    // public ResponseEntity<DiagnosticoResponseDTO> obtenerPrincipal(
-    //         @PathVariable Long historiaId) {
-
-    //     DiagnosticoResponseDTO principal = service.obtenerPrincipal(historiaId);
-    //     return ResponseEntity.ok(principal);
-    // }
-
-    // // 4️⃣ Actualizar un diagnóstico existente
-    // @PutMapping("/{diagnosticoId}")
-    // public ResponseEntity<DiagnosticoResponseDTO> actualizarDiagnostico(
-    //         @PathVariable Long diagnosticoId,
-    //         @Valid @RequestBody DiagnosticoDTO dto) {
-
-    //     DiagnosticoResponseDTO actualizado = service.actualizarDiagnostico(diagnosticoId, dto);
-    //     return ResponseEntity.ok(actualizado);
-    // }
 
     // // 5️⃣ Eliminar un diagnóstico
     // @DeleteMapping("/{diagnosticoId}")

@@ -102,6 +102,38 @@ public class DiagnosticoServiceImpl implements DiagnosticoService{
         return DiagnosticoMapper.toDTO(principal);
     }
 
+    @Override
+    public DiagnosticoResponseDTO actualizaeDiagnostico(Long diagnosticoId, DiagnosticoDTO dto) {
+        Diagnostico diag = diagnosticoRepository.findById(diagnosticoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Diagnóstico no encontrado"));
+
+        if (dto.getDescripcion() != null)
+            diag.setDescripcion(dto.getDescripcion());
+        if (dto.getEvolucion() != null)
+            diag.setEvolucion(dto.getEvolucion());
+        if (dto.getTratamiento() != null)
+            diag.setTratamiento(dto.getTratamiento());
+
+        if (dto.getPrincipal() != null) {
+            if (Boolean.TRUE.equals(dto.getPrincipal()) &&
+                    diagnosticoRepository.existsByHistoriaClinicaIdAndPrincipalTrue(diag.getHistoriaClinica().getId())
+                    && !diag.getPrincipal()) {
+                throw new ResourceNotFoundException("Ya existe un diagnóstico principal para esta historia clínica");
+            }
+            diag.setPrincipal(dto.getPrincipal());
+        }
+
+        // Actualizar CIE10 si se proporciona
+        if (dto.getCie10Codigo() != null && !dto.getCie10Codigo().isBlank()) {
+            Cie10 cie10 = cie10Repository.findById(dto.getCie10Codigo())
+                    .orElseThrow(() -> new ResourceNotFoundException("CIE10 no encontrado"));
+            diag.setCie10(cie10);
+        }
+
+        Diagnostico updated = diagnosticoRepository.save(diag);
+        return DiagnosticoMapper.toDTO(updated);
+    }
+
 
 }
 
