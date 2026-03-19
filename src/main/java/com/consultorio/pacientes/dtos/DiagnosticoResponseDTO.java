@@ -18,7 +18,7 @@ public class DiagnosticoResponseDTO {
     private String evolucion;
     private String tratamiento;
 
-    private Boolean principal;
+    private boolean principal;
     private LocalDateTime fecha;
 
     // CIE10 (opcional)

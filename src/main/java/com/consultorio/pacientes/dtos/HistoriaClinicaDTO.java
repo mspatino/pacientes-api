@@ -13,7 +13,7 @@ public class HistoriaClinicaDTO {
     @NotBlank(message = "El motivo de consulta es obligatorio")
     private String motivoConsulta;
     private String observaciones;
-    private Boolean activa; // wrapper para permitir null
+    private boolean activa; // wrapper para permitir null
     
 
 }

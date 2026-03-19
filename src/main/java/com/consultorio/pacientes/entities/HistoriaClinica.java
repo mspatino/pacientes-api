@@ -40,11 +40,21 @@ public class HistoriaClinica {
     private String observaciones;
 
     @Column(nullable = false)
-    private Boolean activa = true;
+    private boolean activa = true;
 
     @PrePersist
     public void prePersist() {
     this.fechaAlta = LocalDateTime.now();
+    }
+
+    public void addDiagnostico(Diagnostico diagnostico) {
+        diagnosticos.add(diagnostico);
+        diagnostico.setHistoriaClinica(this);
+    }
+
+    public void removeDiagnostico(Diagnostico diagnostico) {
+        diagnosticos.remove(diagnostico);
+        diagnostico.setHistoriaClinica(null);
     }
 
 }

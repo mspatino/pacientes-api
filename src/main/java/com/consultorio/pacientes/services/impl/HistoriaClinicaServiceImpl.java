@@ -1,7 +1,6 @@
 package com.consultorio.pacientes.services.impl;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -58,7 +57,7 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
     //historia.setFechaAlta(LocalDateTime.now());
     historia.setMotivoConsulta(dto.getMotivoConsulta());
     historia.setObservaciones(dto.getObservaciones());
-    historia.setActiva(dto.getActiva() != null ? dto.getActiva() : true);
+    historia.setActiva(Boolean.TRUE.equals(dto.isActiva()));
 
     HistoriaClinica saved = historiaRepo.save(historia);
 
@@ -66,13 +65,17 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
 }
 
 
+
       // Obtener la historia clínica de un paciente
     public Optional<HistoriaClinica> obtenerHistoriaPorPaciente(Long pacienteId) {
         return historiaRepo.findByPacienteId(pacienteId);
     }
 
-    public Optional<HistoriaClinica> obtenerPorId(Long id) {
-        return historiaRepo.findById(id);
+    public HistoriaClinicaResponseDTO obtenerPorId(Long id) {
+        HistoriaClinica hc = historiaRepo.findByIdFull(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Historia clínica no encontrada"));
+        
+        return HistoriaClinicaMapper.toDTO(hc);
     }
 
 
@@ -131,10 +134,8 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
         actualizado = true;
     }
 
-    if (dto.getActiva() != null) {
-        historia.setActiva(dto.getActiva());
-        actualizado = true;
-    }
+    
+    historia.setActiva(Boolean.TRUE.equals(dto.isActiva()));
 
     if (!actualizado) {
         throw new IllegalArgumentException("No se enviaron campos para actualizar");
@@ -150,7 +151,7 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
         HistoriaClinica historia = historiaRepo.findById(historiaId)
                 .orElseThrow(() -> new EntityNotFoundException("Historia clínica no encontrada"));
 
-        if (!historia.getActiva()) {
+        if (!historia.isActiva()) {
             throw new IllegalStateException("La historia clínica ya está cerrada");
         }
 

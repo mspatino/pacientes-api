@@ -26,7 +26,7 @@ public interface HistoriaClinicaService {
 
     public Optional<HistoriaClinica> obtenerHistoriaPorPaciente(Long pacienteId);
 
-    public Optional<HistoriaClinica> obtenerPorId(Long id);
+    public HistoriaClinicaResponseDTO obtenerPorId(Long id);
 
     Page<HistoriaClinica> listarActivas(int page, int size);
 

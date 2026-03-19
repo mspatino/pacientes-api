@@ -16,12 +16,23 @@ import com.consultorio.pacientes.entities.HistoriaClinica;
 @Repository
 public interface HistoriaClinicaRepository extends JpaRepository<HistoriaClinica,Long>, 
                 JpaSpecificationExecutor<HistoriaClinica> {
+
+
+    @Query("""
+        SELECT h FROM HistoriaClinica h
+        LEFT JOIN FETCH h.diagnosticos d
+        LEFT JOIN FETCH d.cie10
+        WHERE h.id = :id
+    """)
+    Optional<HistoriaClinica> findByIdFull(@Param("id") Long id);
     Optional<HistoriaClinica> findByPacienteId(Long pacienteId);
 
     boolean existsByPacienteId(Long pacienteId);
 
-     Page<HistoriaClinica> findByActivaTrue(Pageable pageable);
+     
+    Page<HistoriaClinica> findByActivaTrue(Pageable pageable);
 
+     
      @Query("""
                  SELECT h
                  FROM HistoriaClinica h
@@ -41,5 +52,8 @@ public interface HistoriaClinicaRepository extends JpaRepository<HistoriaClinica
              @Param("desde") LocalDate desde,
              @Param("hasta") LocalDate hasta,
              Pageable pageable);
+
+     @Query("SELECT h FROM HistoriaClinica h LEFT JOIN FETCH h.diagnosticos WHERE h.id = :id")
+     Optional<HistoriaClinica> findByIdWithDiagnosticos(@Param("id") Long id);              
 
 }

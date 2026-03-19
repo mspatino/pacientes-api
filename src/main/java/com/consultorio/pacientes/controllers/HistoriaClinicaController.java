@@ -108,12 +108,20 @@ public class HistoriaClinicaController {
     }
 
     // Obtener historia clínica por ID
-    @GetMapping("/{id}")
-    public ResponseEntity<HistoriaClinica> obtenerPorId(@PathVariable Long id) {
+    // @GetMapping("/{id}")
+    // public ResponseEntity<HistoriaClinicaResponseDTO> obtenerPorId(@PathVariable Long id) {
     
-        return serviceHistoria.obtenerPorId(id)
-            .map( p -> ResponseEntity.ok(p)) //ok
-            .orElse(ResponseEntity.notFound().build()); //404 not found
+    //     return serviceHistoria.obtenerPorId(id)
+    //         .map( p -> ResponseEntity.ok(p)) //ok
+    //         .orElse(ResponseEntity.notFound().build()); //404 not found
+    // }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<HistoriaClinicaResponseDTO> obtenerPorId(@PathVariable Long id) {
+
+        HistoriaClinicaResponseDTO dto = serviceHistoria.obtenerPorId(id);
+
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/buscar")

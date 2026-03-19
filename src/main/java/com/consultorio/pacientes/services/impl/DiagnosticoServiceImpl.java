@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.consultorio.pacientes.dtos.DiagnosticoDTO;
 import com.consultorio.pacientes.dtos.DiagnosticoResponseDTO;
+import com.consultorio.pacientes.dtos.DiagnosticoUpdateDTO;
 import com.consultorio.pacientes.entities.Cie10;
 import com.consultorio.pacientes.entities.Diagnostico;
 import com.consultorio.pacientes.entities.HistoriaClinica;
@@ -44,12 +45,12 @@ public class DiagnosticoServiceImpl implements DiagnosticoService{
    
 
         HistoriaClinica historia = historiaClinicaRepository
-                .findById(historiaClinicaId)
+                .findByIdFull(historiaClinicaId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Historia clínica no encontrada")); 
                         
           // Validar diagnóstico principal único
-        if (Boolean.TRUE.equals(d.getPrincipal())) {
+        if (Boolean.TRUE.equals(d.isPrincipal())) {
             boolean existePrincipal = diagnosticoRepository
                     .existsByHistoriaClinicaIdAndPrincipalTrue(historiaClinicaId);
 
@@ -76,6 +77,8 @@ public class DiagnosticoServiceImpl implements DiagnosticoService{
             diagnostico.setCie10(cie10);
         }
         
+        historia.addDiagnostico(diagnostico);
+
         Diagnostico saved = diagnosticoRepository.save(diagnostico); 
 
         return DiagnosticoMapper.toDTO(saved);
@@ -103,7 +106,7 @@ public class DiagnosticoServiceImpl implements DiagnosticoService{
     }
 
     @Override
-    public DiagnosticoResponseDTO actualizarDiagnostico(Long diagnosticoId, DiagnosticoDTO dto) {
+    public DiagnosticoResponseDTO actualizarDiagnostico(Long diagnosticoId, DiagnosticoUpdateDTO dto) {
         Diagnostico diag = diagnosticoRepository.findById(diagnosticoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Diagnóstico no encontrado"));
 
@@ -114,14 +117,14 @@ public class DiagnosticoServiceImpl implements DiagnosticoService{
         if (dto.getTratamiento() != null)
             diag.setTratamiento(dto.getTratamiento());
 
-        if (dto.getPrincipal() != null) {
-            if (Boolean.TRUE.equals(dto.getPrincipal()) &&
+        
+            if (Boolean.TRUE.equals(dto.isPrincipal()) &&
                     diagnosticoRepository.existsByHistoriaClinicaIdAndPrincipalTrue(diag.getHistoriaClinica().getId())
-                    && !diag.getPrincipal()) {
+                    && !diag.isPrincipal()) {
                 throw new ResourceNotFoundException("Ya existe un diagnóstico principal para esta historia clínica");
             }
-            diag.setPrincipal(dto.getPrincipal());
-        }
+            diag.setPrincipal(dto.isPrincipal());
+        
 
         // Actualizar CIE10 si se proporciona
         if (dto.getCie10Codigo() != null && !dto.getCie10Codigo().isBlank()) {

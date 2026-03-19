@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.consultorio.pacientes.dtos.DiagnosticoDTO;
 import com.consultorio.pacientes.dtos.DiagnosticoResponseDTO;
+import com.consultorio.pacientes.dtos.DiagnosticoUpdateDTO;
 import com.consultorio.pacientes.services.DiagnosticoService;
 
 import jakarta.validation.Valid;
@@ -64,7 +65,7 @@ public class DiagnosticoController {
     @PutMapping("/{diagnosticoId}")
     public ResponseEntity<DiagnosticoResponseDTO> actualizarDiagnostico(
             @PathVariable Long diagnosticoId,
-            @Valid @RequestBody DiagnosticoDTO dto) {
+            @Valid @RequestBody DiagnosticoUpdateDTO dto) {
 
         DiagnosticoResponseDTO actualizado = diagnosticoService.actualizarDiagnostico(diagnosticoId, dto);
         return ResponseEntity.ok(actualizado);

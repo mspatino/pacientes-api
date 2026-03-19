@@ -55,7 +55,7 @@ public class Diagnostico {
     private String tratamiento;
 
     @Column(nullable = false)
-    private Boolean principal;
+    private boolean principal;
 
     @Column(nullable = false)
     private LocalDateTime fecha;
@@ -65,5 +65,6 @@ public class Diagnostico {
         this.fecha = LocalDateTime.now();
     }
 
+    
 
 }
