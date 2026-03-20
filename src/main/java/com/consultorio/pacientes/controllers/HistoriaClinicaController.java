@@ -99,12 +99,15 @@ public class HistoriaClinicaController {
 
     // Obtener historia clínica de un paciente
     @GetMapping("/paciente/{pacienteId}")
-    public ResponseEntity<HistoriaClinica> obtenerHistoriaPorPaciente(@PathVariable Long pacienteId) {
-        Optional<HistoriaClinica> historia = serviceHistoria.obtenerHistoriaPorPaciente(pacienteId);
+    public ResponseEntity<HistoriaClinicaResponseDTO> obtenerHistoriaPorPaciente(@PathVariable Long pacienteId) {
+        //HistoriaClinicaResponseDTO historia = serviceHistoria.obtenerHistoriaPorPaciente(pacienteId);
         
-        return historia
-                .map(h -> ResponseEntity.ok(h))
-                .orElse(ResponseEntity.notFound().build());
+          HistoriaClinicaResponseDTO historia = serviceHistoria
+            .obtenerHistoriaPorPaciente(pacienteId)
+            .orElseThrow(() -> new RuntimeException("Historia clínica no encontrada"));
+
+          return ResponseEntity.ok(historia);
+
     }
 
     // Obtener historia clínica por ID

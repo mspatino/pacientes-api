@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.consultorio.pacientes.dtos.DiagnosticoDTO;
 import com.consultorio.pacientes.dtos.HistoriaClinicaDTO;
 import com.consultorio.pacientes.dtos.HistoriaClinicaResponseDTO;
 import com.consultorio.pacientes.entities.HistoriaClinica;
@@ -19,56 +20,76 @@ import com.consultorio.pacientes.exception.ResourceNotFoundException;
 import com.consultorio.pacientes.mapper.HistoriaClinicaMapper;
 import com.consultorio.pacientes.repositories.HistoriaClinicaRepository;
 import com.consultorio.pacientes.repositories.PacienteRepository;
+import com.consultorio.pacientes.services.DiagnosticoService;
 import com.consultorio.pacientes.services.HistoriaClinicaService;
 import com.consultorio.pacientes.specifications.HistoriaClinicaSpecification;
 
 import jakarta.persistence.EntityNotFoundException;
 
 
-
+@Transactional
 @Service
 public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
 
     private final HistoriaClinicaRepository historiaRepo;
     private final PacienteRepository pacienteRepo;
     // private final Icd10Repository icd10Repo;
+    private final DiagnosticoService diagnosticoService;
+
+
 
     public HistoriaClinicaServiceImpl(
             HistoriaClinicaRepository historiaRepo,
-            PacienteRepository pacienteRepo) {
+            PacienteRepository pacienteRepo,
+            DiagnosticoService diagnosticoService
+           ) {
 
         this.historiaRepo = historiaRepo;
         this.pacienteRepo = pacienteRepo;
+        this.diagnosticoService = diagnosticoService;
+        
 }
 
 
     public HistoriaClinicaResponseDTO crearHistoriaClinica(Long pacienteId, HistoriaClinicaDTO dto) {
 
-    Paciente paciente = pacienteRepo.findById(pacienteId)
-            .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado"));
+        Paciente paciente = pacienteRepo.findById(pacienteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado"));
 
-    // VALIDACIÓN CLAVE: para evitar explotar con excepción SQL 
-    // no es una respuesta limpia para la API
-    if (historiaRepo.existsByPacienteId(pacienteId)) {
-        throw new BusinessException("El paciente ya tiene una historia clínica");
+        // VALIDACIÓN CLAVE: para evitar explotar con excepción SQL
+        // no es una respuesta limpia para la API
+        if (historiaRepo.existsByPacienteId(pacienteId)) {
+            throw new BusinessException("El paciente ya tiene una historia clínica");
+        }
+        HistoriaClinica historia = new HistoriaClinica();
+        historia.setPaciente(paciente);
+        // historia.setFechaAlta(LocalDateTime.now());
+        historia.setMotivoConsulta(dto.getMotivoConsulta());
+        historia.setObservaciones(dto.getObservaciones());
+        historia.setActiva(dto.isActiva());
+
+        //guardar la historia clinica primero
+        HistoriaClinica saved = historiaRepo.save(historia);
+        
+         //  ACÁ CREÁS LOS DIAGNÓSTICOS
+        if (dto.getDiagnosticos() != null && !dto.getDiagnosticos().isEmpty()) {
+
+        for (DiagnosticoDTO d : dto.getDiagnosticos()) {
+            // reutilizás lógica, llamo al crearDiagnostico de DiagnosticoService
+            diagnosticoService.crearDiagnostico(saved.getId(), d); 
+        }
     }
-    HistoriaClinica historia = new HistoriaClinica();
-    historia.setPaciente(paciente);
-    //historia.setFechaAlta(LocalDateTime.now());
-    historia.setMotivoConsulta(dto.getMotivoConsulta());
-    historia.setObservaciones(dto.getObservaciones());
-    historia.setActiva(Boolean.TRUE.equals(dto.isActiva()));
-
-    HistoriaClinica saved = historiaRepo.save(historia);
 
     return HistoriaClinicaMapper.toDTO(saved);
-}
+    }
 
 
 
       // Obtener la historia clínica de un paciente
-    public Optional<HistoriaClinica> obtenerHistoriaPorPaciente(Long pacienteId) {
-        return historiaRepo.findByPacienteId(pacienteId);
+    public Optional<HistoriaClinicaResponseDTO> obtenerHistoriaPorPaciente(Long pacienteId) {
+        //return historiaRepo.findByPacienteId(pacienteId);
+        return historiaRepo.findByPacienteId(pacienteId)
+            .map(HistoriaClinicaMapper::toDTO);
     }
 
     public HistoriaClinicaResponseDTO obtenerPorId(Long id) {
@@ -135,7 +156,7 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
     }
 
     
-    historia.setActiva(Boolean.TRUE.equals(dto.isActiva()));
+    historia.setActiva(dto.isActiva());
 
     if (!actualizado) {
         throw new IllegalArgumentException("No se enviaron campos para actualizar");

@@ -1,10 +1,12 @@
 package com.consultorio.pacientes.services.impl;
 
 
+import java.beans.Transient;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.consultorio.pacientes.dtos.DiagnosticoDTO;
 import com.consultorio.pacientes.dtos.DiagnosticoResponseDTO;
@@ -20,6 +22,7 @@ import com.consultorio.pacientes.repositories.DiagnosticoRepository;
 import com.consultorio.pacientes.repositories.HistoriaClinicaRepository;
 import com.consultorio.pacientes.services.DiagnosticoService;
 
+@Transactional
 @Service
 public class DiagnosticoServiceImpl implements DiagnosticoService{
 
@@ -50,18 +53,29 @@ public class DiagnosticoServiceImpl implements DiagnosticoService{
                         new ResourceNotFoundException("Historia clínica no encontrada")); 
                         
           // Validar diagnóstico principal único
-        if (Boolean.TRUE.equals(d.isPrincipal())) {
+        if (d.isPrincipal()) {
             boolean existePrincipal = diagnosticoRepository
                     .existsByHistoriaClinicaIdAndPrincipalTrue(historiaClinicaId);
 
             if (existePrincipal) {
                 throw new BusinessException("Ya existe un diagnóstico principal para esta historia clínica");
             }
-        }                
+        }   
+        
+        if ((d.getDescripcion() == null || d.getDescripcion().isBlank())
+                && (d.getCie10Codigo() == null || d.getCie10Codigo().isBlank())) {
+
+            throw new BusinessException("Debe ingresar una descripción o un código CIE10");
+        }
 
         Diagnostico diagnostico = new Diagnostico();
+        diagnostico.setPrincipal(d.isPrincipal());
         diagnostico.setHistoriaClinica(historia);
-        diagnostico.setDescripcion(d.getDescripcion());
+
+        if (d.getDescripcion() != null && !d.getDescripcion().isBlank()){
+            diagnostico.setDescripcion(d.getDescripcion());
+        }
+
         diagnostico.setEvolucion(d.getEvolucion());
         diagnostico.setTratamiento(d.getTratamiento());
 
@@ -83,6 +97,42 @@ public class DiagnosticoServiceImpl implements DiagnosticoService{
 
         return DiagnosticoMapper.toDTO(saved);
 
+    }
+
+    
+    public Diagnostico crearDiagnosticoEntity(HistoriaClinica historia, DiagnosticoDTO d) {
+
+        if (d.isPrincipal()) {
+            boolean existePrincipal = diagnosticoRepository
+                    .existsByHistoriaClinicaIdAndPrincipalTrue(historia.getId());
+
+            if (existePrincipal) {
+                throw new BusinessException("Ya existe un diagnóstico principal");
+            }
+        }
+
+        if ((d.getDescripcion() == null || d.getDescripcion().isBlank())
+                && (d.getCie10Codigo() == null || d.getCie10Codigo().isBlank())) {
+
+            throw new BusinessException("Debe ingresar una descripción o CIE10");
+        }
+
+        Diagnostico diagnostico = new Diagnostico();
+        diagnostico.setHistoriaClinica(historia);
+        diagnostico.setDescripcion(d.getDescripcion());
+        diagnostico.setEvolucion(d.getEvolucion());
+        diagnostico.setTratamiento(d.getTratamiento());
+        diagnostico.setPrincipal(d.isPrincipal());
+
+        if (d.getCie10Codigo() != null && !d.getCie10Codigo().isBlank()) {
+            Cie10 cie10 = cie10Repository.findById(d.getCie10Codigo())
+                    .orElseThrow(() -> new ResourceNotFoundException("CIE10 no encontrado"));
+            diagnostico.setCie10(cie10);
+        }
+
+        historia.addDiagnostico(diagnostico);
+
+        return diagnosticoRepository.save(diagnostico);
     }
 
     public List<DiagnosticoResponseDTO> listarPorHistoria(Long historiaId) {
@@ -118,7 +168,7 @@ public class DiagnosticoServiceImpl implements DiagnosticoService{
             diag.setTratamiento(dto.getTratamiento());
 
         
-            if (Boolean.TRUE.equals(dto.isPrincipal()) &&
+            if (dto.isPrincipal() &&
                     diagnosticoRepository.existsByHistoriaClinicaIdAndPrincipalTrue(diag.getHistoriaClinica().getId())
                     && !diag.isPrincipal()) {
                 throw new ResourceNotFoundException("Ya existe un diagnóstico principal para esta historia clínica");

@@ -1,5 +1,8 @@
 package com.consultorio.pacientes.dtos;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,5 +18,7 @@ public class HistoriaClinicaDTO {
     private String observaciones;
     private boolean activa; // wrapper para permitir null
     
+    @Valid
+    private List<DiagnosticoDTO> diagnosticos;
 
 }

@@ -1,6 +1,5 @@
 package com.consultorio.pacientes.dtos;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class DiagnosticoDTO {
 
-    @NotBlank(message = "La descripción es obligatoria")
     @Size(max = 2000)
     private String descripcion;
 

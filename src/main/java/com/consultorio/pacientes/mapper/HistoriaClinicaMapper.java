@@ -2,11 +2,14 @@ package com.consultorio.pacientes.mapper;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
 
+import com.consultorio.pacientes.dtos.Cie10DTO;
 import com.consultorio.pacientes.dtos.DiagnosticoResponseDTO;
 import com.consultorio.pacientes.dtos.HistoriaClinicaResponseDTO;
 import com.consultorio.pacientes.entities.HistoriaClinica;
 
+@Component
 public class HistoriaClinicaMapper {
 
         public static HistoriaClinicaResponseDTO toDTO(HistoriaClinica h) {
@@ -20,9 +23,15 @@ public class HistoriaClinicaMapper {
                         diag.setId(d.getId());
                         diag.setFecha(d.getFecha());
 
+                        // if (d.getCie10() != null) {
+                        //         diag.setCie10Codigo(d.getCie10().getCodigo());
+                        //          diag.setCie10Descripcion(d.getCie10().getDescripcion());
+                        // }
                         if (d.getCie10() != null) {
-                                diag.setCie10Codigo(d.getCie10().getCodigo());
-                                 diag.setCie10Descripcion(d.getCie10().getDescripcion());
+                           Cie10DTO cie10DTO = new Cie10DTO();
+                           cie10DTO.setCodigo(d.getCie10().getCodigo());
+                           cie10DTO.setDescripcion(d.getCie10().getDescripcion());
+                           diag.setCie10(cie10DTO);
                         }
                            
                         diag.setHistoriaClinicaId(h.getId());

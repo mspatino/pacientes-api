@@ -2,10 +2,13 @@ package com.consultorio.pacientes.mapper;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.consultorio.pacientes.dtos.PacienteDTO;
 import com.consultorio.pacientes.dtos.PacienteResponseDTO;
 import com.consultorio.pacientes.entities.Paciente;
 
+@Component
 public class PacienteMapper {
 
     // DTO → Entity
