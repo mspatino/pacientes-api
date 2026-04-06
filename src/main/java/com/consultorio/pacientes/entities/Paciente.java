@@ -16,6 +16,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -49,6 +51,17 @@ public class Paciente {
 
     @Column(length = 100)
     private String ocupacion;
+
+    @Column(length = 20)
+    @Pattern(
+        regexp = "^(Masculino|Femenino|Otro)$",
+        message = "Sexo inválido. Valores permitidos: Masculino, Femenino, Otro"
+    )
+    private String sexo;
+
+    @Email
+    @Column(length = 150)
+    private String email;
 
     @Column(nullable = false)
     private LocalDate fechaNacimiento;

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,6 +35,17 @@ public class PacienteDTO {
 
     @Size(max = 100)
     private String ocupacion;
+
+    @Size(max = 20, message = "El sexo es demasiado largo")
+    @Pattern(
+        regexp = "^(Masculino|Femenino|Otro)$",
+        message = "Sexo inválido. Valores permitidos: Masculino, Femenino, Otro"
+    )
+    private String sexo;
+
+    @Email(message = "Email inválido")
+    @Size(max = 150, message = "El email es demasiado largo")
+    private String email;
 
     @NotNull(message = "La fecha de nacimiento es obligatoria")
     private LocalDate fechaNacimiento;

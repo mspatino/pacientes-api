@@ -22,6 +22,8 @@ public class PacienteResponseDTO {
     private String direccion;
     private String telefono;
     private String ocupacion;
+    private String sexo;
+    private String email;
 
     private LocalDate fechaNacimiento;
     private LocalDateTime fechaAlta;

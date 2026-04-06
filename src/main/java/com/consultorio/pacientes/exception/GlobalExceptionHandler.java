@@ -61,4 +61,19 @@ public ResponseEntity<Map<String, Object>> handleBusiness(BusinessException ex) 
     return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
 }
 
+
+@ExceptionHandler(RuntimeException.class)
+public ResponseEntity<?> handleRuntime(RuntimeException ex) {
+
+    String message = switch (ex.getMessage()) {
+        case "TOKEN_REUSE" -> "Sesión inválida. Por favor iniciá sesión nuevamente.";
+        case "TOKEN_EXPIRED" -> "Tu sesión expiró. Por favor iniciá sesión nuevamente.";
+        default -> "Error del servidor";
+    };
+
+    return ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(Map.of("message", message));
+}
+
 }

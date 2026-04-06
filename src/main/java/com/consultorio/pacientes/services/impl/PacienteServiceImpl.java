@@ -59,6 +59,12 @@ public class PacienteServiceImpl implements PacienteService {
         if (datos.getOcupacion() != null) {
             paciente.setOcupacion(datos.getOcupacion());
         }
+        if (datos.getSexo() != null) {
+            paciente.setSexo(datos.getSexo());
+        }
+        if (datos.getEmail() != null) {
+            paciente.setEmail(datos.getEmail());
+        }
         if (datos.getFechaNacimiento() != null) {
             paciente.setFechaNacimiento(datos.getFechaNacimiento());
         }

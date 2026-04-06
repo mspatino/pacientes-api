@@ -15,6 +15,8 @@ import com.consultorio.pacientes.security.JwtService;
 import com.consultorio.pacientes.services.AuthService;
 import com.consultorio.pacientes.services.RefreshTokenService;
 
+import org.springframework.security.authentication.BadCredentialsException;
+
 
 @Service
 public class AuthServiceImpl implements AuthService{
@@ -37,13 +39,15 @@ public class AuthServiceImpl implements AuthService{
     }
 
     public TokenResponseDTO login(LoginRequestDTO request) {
-
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+        try {
+                authenticationManager.authenticate(
+                                new UsernamePasswordAuthenticationToken(
+                                                request.getUsername(),
+                                                request.getPassword()));             
+        } catch (BadCredentialsException ex) {
+        throw new BadCredentialsException("Usuario o contraseña incorrectos");
+    }
+ 
 
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow();
@@ -67,17 +71,29 @@ public class AuthServiceImpl implements AuthService{
         //             throw new RuntimeException("Refresh token revocado");
         //     }
 
-            if (refreshToken.isRevoked()) {
-                    // posible ataque
-                    refreshTokenService.revokeAllUserTokens(
-                                    refreshToken.getUser());
+        //     if (refreshToken.isRevoked()) {
+        //             // posible ataque
+        //             refreshTokenService.revokeAllUserTokens(
+        //                             refreshToken.getUser());
 
-                    throw new RuntimeException("Token reuse detectado");
-            }
+        //             throw new RuntimeException("Token reuse detectado");
+        //     }
 
-            if (refreshToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-                    throw new RuntimeException("Refresh token expirado");
-            }
+        //     if (refreshToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+        //             throw new RuntimeException("Refresh token expirado");
+        //     }
+
+
+                if (refreshToken.isRevoked()) {
+                refreshTokenService.revokeAllUserTokens(refreshToken.getUser());
+                throw new RuntimeException("TOKEN_REUSE");
+                }
+
+                if (refreshToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+                throw new RuntimeException("TOKEN_EXPIRED");
+                }
+
+
 
             String newAccessToken = jwtService.generateToken(
                             refreshToken.getUser().getUsername());
