@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -54,8 +55,9 @@ public class Diagnostico {
     @Column(length = 2000)
     private String tratamiento;
 
+    @NotNull
     @Column(nullable = false)
-    private boolean principal;
+    private Boolean principal;
 
     @Column(nullable = false)
     private LocalDateTime fecha;
@@ -63,6 +65,9 @@ public class Diagnostico {
     @PrePersist
     public void prePersist() {
         this.fecha = LocalDateTime.now();
+        if (this.principal == null) {
+            this.principal = Boolean.FALSE;
+        }
     }
 
     

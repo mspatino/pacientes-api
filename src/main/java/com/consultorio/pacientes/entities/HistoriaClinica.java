@@ -1,6 +1,7 @@
 package com.consultorio.pacientes.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,12 +40,25 @@ public class HistoriaClinica {
     @Column(length = 5000)
     private String observaciones;
 
+    @Column(length = 4000)
+    private String medicacion;
+
+    @Column(length = 4000)
+    private String consumo;
+
+    @Column(length = 4000)
+    private String tratamientosAnteriores;
+
+    @NotNull
     @Column(nullable = false)
-    private boolean activa = true;
+    private Boolean activa = true;
 
     @PrePersist
     public void prePersist() {
     this.fechaAlta = LocalDateTime.now();
+    if (this.activa == null) {
+        this.activa = true;
+    }
     }
 
     public void addDiagnostico(Diagnostico diagnostico) {
@@ -58,4 +72,3 @@ public class HistoriaClinica {
     }
 
 }
-

@@ -66,7 +66,10 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
         // historia.setFechaAlta(LocalDateTime.now());
         historia.setMotivoConsulta(dto.getMotivoConsulta());
         historia.setObservaciones(dto.getObservaciones());
-        historia.setActiva(dto.isActiva());
+        historia.setMedicacion(dto.getMedicacion());
+        historia.setConsumo(dto.getConsumo());
+        historia.setTratamientosAnteriores(dto.getTratamientosAnteriores());
+        historia.setActiva(dto.getActiva() != null ? dto.getActiva() : Boolean.TRUE);
 
         //guardar la historia clinica primero
         HistoriaClinica saved = historiaRepo.save(historia);
@@ -155,8 +158,25 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
         actualizado = true;
     }
 
-    
-    historia.setActiva(dto.isActiva());
+    if (dto.getMedicacion() != null) {
+        historia.setMedicacion(dto.getMedicacion());
+        actualizado = true;
+    }
+
+    if (dto.getConsumo() != null) {
+        historia.setConsumo(dto.getConsumo());
+        actualizado = true;
+    }
+
+    if (dto.getTratamientosAnteriores() != null) {
+        historia.setTratamientosAnteriores(dto.getTratamientosAnteriores());
+        actualizado = true;
+    }
+
+    if (dto.getActiva() != null) {
+        historia.setActiva(dto.getActiva());
+        actualizado = true;
+    }
 
     if (!actualizado) {
         throw new IllegalArgumentException("No se enviaron campos para actualizar");
@@ -172,11 +192,11 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
         HistoriaClinica historia = historiaRepo.findById(historiaId)
                 .orElseThrow(() -> new EntityNotFoundException("Historia clínica no encontrada"));
 
-        if (!historia.isActiva()) {
+        if (!Boolean.TRUE.equals(historia.getActiva())) {
             throw new IllegalStateException("La historia clínica ya está cerrada");
         }
 
-        historia.setActiva(false);
+        historia.setActiva(Boolean.FALSE);
 
         HistoriaClinica saved = historiaRepo.save(historia);
         return HistoriaClinicaMapper.toDTO(saved);

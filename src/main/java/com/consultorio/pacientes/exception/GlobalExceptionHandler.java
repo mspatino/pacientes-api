@@ -62,18 +62,30 @@ public ResponseEntity<Map<String, Object>> handleBusiness(BusinessException ex) 
 }
 
 
+@ExceptionHandler(IllegalArgumentException.class)
+public ResponseEntity<?> handleIllegalArgument(IllegalArgumentException ex) {
+    return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(Map.of("message", ex.getMessage()));
+}
+
 @ExceptionHandler(RuntimeException.class)
 public ResponseEntity<?> handleRuntime(RuntimeException ex) {
+    if ("TOKEN_REUSE".equals(ex.getMessage())) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("message", "Sesión inválida. Por favor iniciá sesión nuevamente."));
+    }
 
-    String message = switch (ex.getMessage()) {
-        case "TOKEN_REUSE" -> "Sesión inválida. Por favor iniciá sesión nuevamente.";
-        case "TOKEN_EXPIRED" -> "Tu sesión expiró. Por favor iniciá sesión nuevamente.";
-        default -> "Error del servidor";
-    };
+    if ("TOKEN_EXPIRED".equals(ex.getMessage())) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("message", "Tu sesión expiró. Por favor iniciá sesión nuevamente."));
+    }
 
     return ResponseEntity
-            .status(HttpStatus.UNAUTHORIZED)
-            .body(Map.of("message", message));
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(Map.of("message", "Error del servidor"));
 }
 
 }

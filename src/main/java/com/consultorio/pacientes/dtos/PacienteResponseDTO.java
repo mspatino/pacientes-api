@@ -2,6 +2,11 @@ package com.consultorio.pacientes.dtos;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.consultorio.pacientes.entities.enums.ConvivienteTipo;
+import com.consultorio.pacientes.entities.enums.EstadoCivilTipo;
+import com.consultorio.pacientes.entities.enums.NivelEducativoTipo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,8 +27,11 @@ public class PacienteResponseDTO {
     private String direccion;
     private String telefono;
     private String ocupacion;
+    private NivelEducativoTipo nivelEducativo;
+    private EstadoCivilTipo estadoCivil;
     private String sexo;
     private String email;
+    private List<ConvivienteTipo> convivientes;
 
     private LocalDate fechaNacimiento;
     private LocalDateTime fechaAlta;

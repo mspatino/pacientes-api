@@ -19,7 +19,7 @@ public class HistoriaClinicaMapper {
                         diag.setDescripcion(d.getDescripcion());
                         diag.setEvolucion(d.getEvolucion());
                         diag.setTratamiento(d.getTratamiento());
-                        diag.setPrincipal(d.isPrincipal());
+                        diag.setPrincipal(Boolean.TRUE.equals(d.getPrincipal()));
                         diag.setId(d.getId());
                         diag.setFecha(d.getFecha());
 
@@ -46,7 +46,10 @@ public class HistoriaClinicaMapper {
                 dto.setFechaAlta(h.getFechaAlta());
                 dto.setMotivoConsulta(h.getMotivoConsulta());
                 dto.setObservaciones(h.getObservaciones());
-                dto.setActiva(h.isActiva());
+                dto.setMedicacion(h.getMedicacion());
+                dto.setConsumo(h.getConsumo());
+                dto.setTratamientosAnteriores(h.getTratamientosAnteriores());
+                dto.setActiva(Boolean.TRUE.equals(h.getActiva()));
 
                 // ACÁ USÁS LA LISTA CORRECTA
                 dto.setDiagnosticos(lista);

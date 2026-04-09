@@ -1,8 +1,14 @@
 package com.consultorio.pacientes.dtos;
 
 import java.time.LocalDate;
+import java.util.List;
+
+import com.consultorio.pacientes.entities.enums.ConvivienteTipo;
+import com.consultorio.pacientes.entities.enums.EstadoCivilTipo;
+import com.consultorio.pacientes.entities.enums.NivelEducativoTipo;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -36,6 +42,12 @@ public class PacienteDTO {
     @Size(max = 100)
     private String ocupacion;
 
+    @NotNull(message = "El nivel educativo es obligatorio")
+    private NivelEducativoTipo nivelEducativo;
+
+    @NotNull(message = "El estado civil es obligatorio")
+    private EstadoCivilTipo estadoCivil;
+
     @Size(max = 20, message = "El sexo es demasiado largo")
     @Pattern(
         regexp = "^(Masculino|Femenino|Otro)$",
@@ -46,6 +58,9 @@ public class PacienteDTO {
     @Email(message = "Email inválido")
     @Size(max = 150, message = "El email es demasiado largo")
     private String email;
+
+    @NotEmpty(message = "Debe informar al menos un conviviente")
+    private List<@NotNull(message = "El conviviente no puede ser nulo") ConvivienteTipo> convivientes;
 
     @NotNull(message = "La fecha de nacimiento es obligatoria")
     private LocalDate fechaNacimiento;

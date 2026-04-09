@@ -22,8 +22,11 @@ public class PacienteMapper {
         p.setDireccion(dto.getDireccion());
         p.setTelefono(dto.getTelefono());
         p.setOcupacion(dto.getOcupacion());
+        p.setNivelEducativo(dto.getNivelEducativo());
+        p.setEstadoCivil(dto.getEstadoCivil());
         p.setSexo(dto.getSexo());
         p.setEmail(dto.getEmail());
+        p.setConvivientes(dto.getConvivientes());
         p.setFechaNacimiento(dto.getFechaNacimiento());
 
         return p;
@@ -41,8 +44,11 @@ public class PacienteMapper {
         dto.setDireccion(p.getDireccion());
         dto.setTelefono(p.getTelefono());
         dto.setOcupacion(p.getOcupacion());
+        dto.setNivelEducativo(p.getNivelEducativo());
+        dto.setEstadoCivil(p.getEstadoCivil());
         dto.setSexo(p.getSexo());
         dto.setEmail(p.getEmail());
+        dto.setConvivientes(p.getConvivientes());
         dto.setFechaNacimiento(p.getFechaNacimiento());
         dto.setFechaAlta(p.getFechaAlta());
 

@@ -37,6 +37,10 @@ public class PacienteServiceImpl implements PacienteService {
 
 
     public PacienteResponseDTO actualizar(Long id, PacienteDTO datos) {
+        return actualizarParcial(id, datos);
+}
+
+    public PacienteResponseDTO actualizarParcial(Long id, PacienteDTO datos) {
       
     Paciente paciente = repository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado"));
@@ -59,11 +63,20 @@ public class PacienteServiceImpl implements PacienteService {
         if (datos.getOcupacion() != null) {
             paciente.setOcupacion(datos.getOcupacion());
         }
+        if (datos.getNivelEducativo() != null) {
+            paciente.setNivelEducativo(datos.getNivelEducativo());
+        }
+        if (datos.getEstadoCivil() != null) {
+            paciente.setEstadoCivil(datos.getEstadoCivil());
+        }
         if (datos.getSexo() != null) {
             paciente.setSexo(datos.getSexo());
         }
         if (datos.getEmail() != null) {
             paciente.setEmail(datos.getEmail());
+        }
+        if (datos.getConvivientes() != null) {
+            paciente.setConvivientes(datos.getConvivientes());
         }
         if (datos.getFechaNacimiento() != null) {
             paciente.setFechaNacimiento(datos.getFechaNacimiento());

@@ -22,5 +22,5 @@ public class DiagnosticoUpdateDTO {
 
     private String cie10Codigo;
 
-    private boolean principal;
+    private Boolean principal;
 }

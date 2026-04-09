@@ -19,6 +19,9 @@ public class HistoriaClinicaResponseDTO {
     private LocalDateTime fechaAlta;
     private String motivoConsulta;
     private String observaciones;
+    private String medicacion;
+    private String consumo;
+    private String tratamientosAnteriores;
     private boolean activa;
     private List<DiagnosticoResponseDTO> diagnosticos;
 
