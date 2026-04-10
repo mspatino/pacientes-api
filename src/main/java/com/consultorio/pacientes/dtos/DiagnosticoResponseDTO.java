@@ -18,12 +18,10 @@ public class DiagnosticoResponseDTO {
     private String evolucion;
     private String tratamiento;
 
-    private boolean principal;
+    private Boolean principal;
     private LocalDateTime fecha;
 
     // CIE10 (opcional)
-    // private String cie10Codigo;
-    // private String cie10Descripcion;
     private Cie10DTO cie10;
 
     // opcional (a veces útil para debug o frontend)
