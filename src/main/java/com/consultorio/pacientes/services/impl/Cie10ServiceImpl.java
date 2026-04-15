@@ -36,35 +36,95 @@ public class Cie10ServiceImpl implements Cie10Service{
     //      Pageable limit = PageRequest.of(0,10);
     //     return repository.autocomplete(texto.toLowerCase(), limit);
     // }
+@Override
+public List<Cie10> autocomplete(String texto) {
 
-    @Override
-    public List<Cie10> autocomplete(String texto) {
+    if (texto == null || texto.trim().length() < 3) {
+        return List.of();
+    }
 
-        Pageable limit = PageRequest.of(0, 10);
+    Pageable limit = PageRequest.of(0, 10);
 
-        
-         texto = texto.trim().replaceAll("[^A-Za-z0-9.]", "");
+    texto = texto.trim().toLowerCase();
+    List<String> palabras = List.of(texto.split("\\s+"));
 
-        String textoUpper = texto.toUpperCase();
-        String textoLower = texto.toLowerCase();
-        
-        // si empieza con letra + número → parece código CIE10
-        //if (texto.matches("(?i)^F\\d.*")) {
-         if (textoUpper.matches("^[A-Z]\\d.*")){
-            // return repository.buscarPorCodigo(texto.toUpperCase(), limit);
-            // 1 buscar exacto
-            Optional<Cie10> exacto = repository.findById(textoUpper);
-            if (exacto.isPresent()) {
-                return List.of(exacto.get());
-            }
-            System.out.println("Busca por codigo");
-            // 2 buscar prefijo
-            return repository.buscarPorCodigo(textoUpper, limit);
+    return repository.autocompleteFlexible(palabras, limit);
+}
 
+// @Override
+// public List<Cie10> autocomplete(String texto, int page, int size) {
+
+//     if (texto == null || texto.trim().length() < 3) {
+//         return List.of();
+//     }
+
+//     Pageable pageable = PageRequest.of(page, size);
+
+//     texto = texto.trim().toLowerCase();
+//     List<String> palabras = List.of(texto.split("\\s+"));
+
+//     return repository.autocompleteFlexible(palabras, pageable);
+// }
+@Override
+public List<Cie10> autocomplete(String texto, int page, int size) {
+
+    if (texto == null || texto.trim().length() < 3) {
+        return List.of();
+    }
+
+    Pageable pageable = PageRequest.of(page, size);
+
+    texto = texto.trim();
+    String textoUpper = texto.toUpperCase();
+    String textoLower = texto.toLowerCase();
+
+    //  DETECTAR SI ES CODIGO
+    if (textoUpper.matches("^[A-Z]\\d.*")) {
+
+        // 1. exacto primero
+        Optional<Cie10> exacto = repository.findById(textoUpper);
+        if (exacto.isPresent()) {
+            return List.of(exacto.get());
         }
 
-
-        return repository.buscarPorDescripcion(textoLower, limit);
+        // 2. prefijo de código (F32, F3, etc.)
+        return repository.buscarPorCodigo(textoUpper, pageable);
     }
+
+    // 🔎 TEXTO NORMAL (multi palabra)
+    List<String> palabras = List.of(textoLower.split("\\s+"));
+
+    return repository.autocompleteFlexible(palabras, pageable);
+}
+
+    // @Override
+    // public List<Cie10> autocomplete(String texto) {
+
+    //    //Pageable limit = PageRequest.of(0, 10);
+
+        
+    //      texto = texto.trim().replaceAll("[^A-Za-z0-9.]", "");
+
+    //     String textoUpper = texto.toUpperCase();
+    //     String textoLower = texto.toLowerCase();
+        
+    //     // si empieza con letra + número → parece código CIE10
+    //     //if (texto.matches("(?i)^F\\d.*")) {
+    //      if (textoUpper.matches("^[A-Z]\\d.*")){
+    //         // return repository.buscarPorCodigo(texto.toUpperCase(), limit);
+    //         // 1 buscar exacto
+    //         Optional<Cie10> exacto = repository.findById(textoUpper);
+    //         if (exacto.isPresent()) {
+    //             return List.of(exacto.get());
+    //         }
+    //         System.out.println("Busca por codigo");
+    //         // 2 buscar prefijo
+    //         return repository.buscarPorCod(textoUpper);
+
+    //     }
+
+
+    //     return repository.buscarPorDesc(textoLower);
+    // }
 
 }

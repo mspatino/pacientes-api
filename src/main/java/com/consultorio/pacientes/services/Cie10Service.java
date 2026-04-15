@@ -11,5 +11,6 @@ public interface Cie10Service {
      public List<Cie10> buscar(String texto);
      public Page<Cie10> buscarPorCodigoYDescripcion(String texto,Integer page, Integer size);
      public List<Cie10> autocomplete(String texto);
+     public List<Cie10> autocomplete(String texto, int page, int size);
 
 }

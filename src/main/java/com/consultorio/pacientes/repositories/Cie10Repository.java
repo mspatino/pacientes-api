@@ -12,9 +12,12 @@ import org.springframework.stereotype.Repository;
 
 import com.consultorio.pacientes.entities.Cie10;
 
-@Repository
-public interface Cie10Repository extends JpaRepository<Cie10,String> {
 
+
+@Repository
+public interface Cie10Repository extends JpaRepository<Cie10,String>, Cie10RepositoryCustom {
+
+   
     Optional<Cie10> findById(String texto);
 
     List<Cie10> findTop20ByDescripcionContainingIgnoreCase(String texto);
@@ -47,12 +50,15 @@ public interface Cie10Repository extends JpaRepository<Cie10,String> {
                 LOWER(c.descripcion) LIKE LOWER(CONCAT('%',:texto,'%'))
                 OR LOWER(c.codigo) LIKE LOWER(CONCAT(:texto,'%'))
             """)
-     List<Cie10> autocomplete(@Param("texto") String texto, Pageable pageable);
+     List<Cie10> autocomplete(@Param("texto") String texto);
+
+     
+
 
      @Query("""
              SELECT c
              FROM Cie10 c
-             WHERE LOWER(c.descripcion) LIKE LOWER(CONCAT(:texto,'%'))
+             WHERE LOWER(c.descripcion) LIKE LOWER(CONCAT('%',:texto,'%'))
              ORDER BY c.descripcion
              """)
      List<Cie10> buscarPorDescripcion(@Param("texto") String texto, Pageable pageable);

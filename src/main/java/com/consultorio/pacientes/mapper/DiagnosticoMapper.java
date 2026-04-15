@@ -19,7 +19,8 @@ public class DiagnosticoMapper {
         dto.setTratamiento(d.getTratamiento());
     
         dto.setPrincipal(Boolean.TRUE.equals(d.getPrincipal()));
-        dto.setFecha(d.getFecha());
+        dto.setFechaInicio(d.getFechaInicio());
+        dto.setFechaFin(d.getFechaFin());
 
         // historia clínica
         if (d.getHistoriaClinica() != null) {

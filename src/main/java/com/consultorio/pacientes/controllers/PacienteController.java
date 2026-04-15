@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.consultorio.pacientes.dtos.PacienteDTO;
 import com.consultorio.pacientes.dtos.PacienteResponseDTO;
+import com.consultorio.pacientes.dtos.HistoriaClinicaResponseDTO;
+import com.consultorio.pacientes.exception.ResourceNotFoundException;
+import com.consultorio.pacientes.services.HistoriaClinicaService;
 import com.consultorio.pacientes.services.PacienteService;
 
 import jakarta.validation.Valid;
@@ -26,9 +29,11 @@ import jakarta.validation.Valid;
 public class PacienteController {
 
     private final PacienteService service;
+    private final HistoriaClinicaService historiaClinicaService;
 
-    public PacienteController(PacienteService service) {
+    public PacienteController(PacienteService service, HistoriaClinicaService historiaClinicaService) {
         this.service = service;
+        this.historiaClinicaService = historiaClinicaService;
     }
 
     @PostMapping
@@ -74,6 +79,16 @@ public class PacienteController {
     @GetMapping("/{id}")
     public ResponseEntity<PacienteResponseDTO> obtenerPaciente(@PathVariable Long id) {
         return ResponseEntity.ok(service.obtenerPorId(id));
+    }
+
+    // Alias para frontend: /api/pacientes/{id}/historia-clinica
+    @GetMapping("/{id}/historia-clinica")
+    public ResponseEntity<HistoriaClinicaResponseDTO> obtenerHistoriaClinicaPorPaciente(@PathVariable Long id) {
+        HistoriaClinicaResponseDTO historia = historiaClinicaService
+                .obtenerHistoriaPorPaciente(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Historia clínica no encontrada"));
+
+        return ResponseEntity.ok(historia);
     }
 
 }

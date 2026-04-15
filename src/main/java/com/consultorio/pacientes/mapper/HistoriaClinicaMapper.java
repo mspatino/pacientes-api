@@ -21,7 +21,8 @@ public class HistoriaClinicaMapper {
                         diag.setTratamiento(d.getTratamiento());
                         diag.setPrincipal(Boolean.TRUE.equals(d.getPrincipal()));
                         diag.setId(d.getId());
-                        diag.setFecha(d.getFecha());
+                        diag.setFechaInicio(d.getFechaInicio());
+                        diag.setFechaFin(d.getFechaFin());
 
                         // if (d.getCie10() != null) {
                         //         diag.setCie10Codigo(d.getCie10().getCodigo());

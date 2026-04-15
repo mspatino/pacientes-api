@@ -20,7 +20,7 @@ public class DiagnosticoUpdateDTO {
     @Size(max = 2000)
     private String tratamiento;
 
-    private String cie10Codigo;
+    private Cie10DTO cie10;
 
     private Boolean principal;
 }

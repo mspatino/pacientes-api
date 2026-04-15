@@ -37,9 +37,17 @@ public class Cie10Controller {
 
 
     // GET /api/diagnosticos/autocomplete?q=depre
+    // @GetMapping("/autocomplete")
+    // public List<Cie10> autocomplete(@RequestParam String q){
+    //     return service.autocomplete(q);
+    // }
+
     @GetMapping("/autocomplete")
-    public List<Cie10> autocomplete(@RequestParam String q){
-        return service.autocomplete(q);
+    public List<Cie10> autocomplete(
+            @RequestParam String q,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return service.autocomplete(q, page, size);
     }
     
 }

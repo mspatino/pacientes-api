@@ -1,5 +1,7 @@
 package com.consultorio.pacientes.dtos;
 
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -20,10 +22,12 @@ public class DiagnosticoDTO {
     @Size(max = 2000)
     private String tratamiento;
 
-    private String cie10Codigo;
+    private Cie10DTO cie10;
 
     @NotNull(message = "Debe indicar si el diagnóstico es principal")
     private Boolean principal;
+
+    private LocalDateTime fechaFin; 
 }
   
 

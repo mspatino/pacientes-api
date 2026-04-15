@@ -19,7 +19,8 @@ public class DiagnosticoResponseDTO {
     private String tratamiento;
 
     private Boolean principal;
-    private LocalDateTime fecha;
+    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaFin;
 
     // CIE10 (opcional)
     private Cie10DTO cie10;

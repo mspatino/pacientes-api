@@ -1,7 +1,6 @@
 package com.consultorio.pacientes.controllers;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.consultorio.pacientes.dtos.HistoriaClinicaDTO;
 import com.consultorio.pacientes.dtos.HistoriaClinicaResponseDTO;
 import com.consultorio.pacientes.entities.HistoriaClinica;
+import com.consultorio.pacientes.exception.ResourceNotFoundException;
 import com.consultorio.pacientes.services.HistoriaClinicaService;
 import com.consultorio.pacientes.services.impl.HistoriaClinicaServiceImpl;
 
@@ -104,7 +104,7 @@ public class HistoriaClinicaController {
         
           HistoriaClinicaResponseDTO historia = serviceHistoria
             .obtenerHistoriaPorPaciente(pacienteId)
-            .orElseThrow(() -> new RuntimeException("Historia clínica no encontrada"));
+            .orElseThrow(() -> new ResourceNotFoundException("Historia clínica no encontrada"));
 
           return ResponseEntity.ok(historia);
 

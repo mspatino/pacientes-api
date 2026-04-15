@@ -59,12 +59,17 @@ public class Diagnostico {
     @Column(nullable = false)
     private Boolean principal;
 
-    @Column(nullable = false)
-    private LocalDateTime fecha;
+    @Column(nullable = true)
+    private LocalDateTime fechaInicio;
+
+    @Column(nullable = true)
+    private LocalDateTime fechaFin; // null = activo
 
     @PrePersist
     public void prePersist() {
-        this.fecha = LocalDateTime.now();
+        if (this.fechaInicio == null) {
+            this.fechaInicio = LocalDateTime.now();
+        }
         if (this.principal == null) {
             this.principal = Boolean.FALSE;
         }
