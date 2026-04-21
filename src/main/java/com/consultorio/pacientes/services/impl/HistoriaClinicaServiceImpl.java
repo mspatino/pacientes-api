@@ -1,6 +1,7 @@
 package com.consultorio.pacientes.services.impl;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -13,11 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.consultorio.pacientes.dtos.DiagnosticoDTO;
 import com.consultorio.pacientes.dtos.HistoriaClinicaDTO;
 import com.consultorio.pacientes.dtos.HistoriaClinicaResponseDTO;
+import com.consultorio.pacientes.entities.Diagnostico;
 import com.consultorio.pacientes.entities.HistoriaClinica;
 import com.consultorio.pacientes.entities.Paciente;
 import com.consultorio.pacientes.exception.BusinessException;
 import com.consultorio.pacientes.exception.ResourceNotFoundException;
 import com.consultorio.pacientes.mapper.HistoriaClinicaMapper;
+import com.consultorio.pacientes.repositories.DiagnosticoRepository;
 import com.consultorio.pacientes.repositories.HistoriaClinicaRepository;
 import com.consultorio.pacientes.repositories.PacienteRepository;
 import com.consultorio.pacientes.services.DiagnosticoService;
@@ -33,6 +36,7 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
 
     private final HistoriaClinicaRepository historiaRepo;
     private final PacienteRepository pacienteRepo;
+    private final DiagnosticoRepository diagnosticoRepository;
     // private final Icd10Repository icd10Repo;
     private final DiagnosticoService diagnosticoService;
 
@@ -41,11 +45,13 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
     public HistoriaClinicaServiceImpl(
             HistoriaClinicaRepository historiaRepo,
             PacienteRepository pacienteRepo,
+            DiagnosticoRepository diagnosticoRepository,
             DiagnosticoService diagnosticoService
            ) {
 
         this.historiaRepo = historiaRepo;
         this.pacienteRepo = pacienteRepo;
+        this.diagnosticoRepository = diagnosticoRepository;
         this.diagnosticoService = diagnosticoService;
         
 }
@@ -143,7 +149,7 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
     @Transactional
     public HistoriaClinicaResponseDTO actualizarHistoriaClinica(Long historiaId, HistoriaClinicaDTO dto) {
            
-    HistoriaClinica historia = historiaRepo.findById(historiaId)
+    HistoriaClinica historia = historiaRepo.findByIdFull(historiaId)
             .orElseThrow(() -> new RuntimeException("Historia clínica no encontrada"));
 
     boolean actualizado = false;
@@ -178,11 +184,24 @@ public class HistoriaClinicaServiceImpl implements HistoriaClinicaService {
         actualizado = true;
     }
 
+    // Handle diagnosticos
+    if (dto.getDiagnosticos() != null) {
+        diagnosticoRepository.deleteAll(historia.getDiagnosticos());
+        historia.getDiagnosticos().clear();
+        historiaRepo.flush();
+        for (DiagnosticoDTO d : dto.getDiagnosticos()) {
+            diagnosticoService.crearDiagnostico(historiaId, d);
+        }
+        actualizado = true;
+    }
+
     if (!actualizado) {
         throw new IllegalArgumentException("No se enviaron campos para actualizar");
     }
 
-    HistoriaClinica saved = historiaRepo.save(historia);
+    historiaRepo.save(historia);
+    HistoriaClinica saved = historiaRepo.findByIdFull(historiaId)
+            .orElseThrow(() -> new RuntimeException("Historia clínica no encontrada"));
 
     return HistoriaClinicaMapper.toDTO(saved);
     }

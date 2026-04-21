@@ -127,17 +127,25 @@ public class DiagnosticoServiceImpl implements DiagnosticoService{
         if (dto.getTratamiento() != null)
             diag.setTratamiento(dto.getTratamiento());
 
+        if (dto.getFechaFin() != null) {
+            diag.setFechaFin(dto.getFechaFin());
+        }
+
         // si lo quieren como principal → reemplaza
         if (Boolean.TRUE.equals(dto.getPrincipal())) {
             diagnosticoRepository.setPrincipalUnico(
                     diag.getHistoriaClinica().getId(),
                     diagnosticoId
             );
+            diag.setPrincipal(Boolean.TRUE);
+        } else if (Boolean.FALSE.equals(dto.getPrincipal())) {
+            diag.setPrincipal(Boolean.FALSE);
         }
 
         // CIE10 opcional
-        if (dto.getCie10Codigo() != null && !dto.getCie10Codigo().isBlank()) {
-            Cie10 cie10 = cie10Repository.findById(dto.getCie10Codigo())
+        String cie10Codigo = getCie10Codigo(dto.getCie10());
+        if (cie10Codigo != null && !cie10Codigo.isBlank()) {
+            Cie10 cie10 = cie10Repository.findById(cie10Codigo)
                     .orElseThrow(() -> new ResourceNotFoundException("CIE10 no encontrado"));
             diag.setCie10(cie10);
         }
@@ -153,7 +161,7 @@ public class DiagnosticoServiceImpl implements DiagnosticoService{
 
     private void validarDescripcionOCie10(DiagnosticoDTO dto) {
         if ((dto.getDescripcion() == null || dto.getDescripcion().isBlank())
-                && (dto.getCie10Codigo() == null || dto.getCie10Codigo().isBlank())) {
+                && (getCie10Codigo(dto.getCie10()) == null || getCie10Codigo(dto.getCie10()).isBlank())) {
 
             throw new BusinessException("Debe ingresar una descripción o un código CIE10");
         }
@@ -167,12 +175,12 @@ public class DiagnosticoServiceImpl implements DiagnosticoService{
         diagnostico.setDescripcion(dto.getDescripcion());
         diagnostico.setEvolucion(dto.getEvolucion());
         diagnostico.setTratamiento(dto.getTratamiento());
+        diagnostico.setFechaFin(dto.getFechaFin());
+        diagnostico.setPrincipal(Boolean.TRUE.equals(dto.getPrincipal()));
 
-	        // siempre false por defecto
-	        diagnostico.setPrincipal(Boolean.FALSE);
-
-        if (dto.getCie10Codigo() != null && !dto.getCie10Codigo().isBlank()) {
-            Cie10 cie10 = cie10Repository.findById(dto.getCie10Codigo())
+        String cie10Codigo = getCie10Codigo(dto.getCie10());
+        if (cie10Codigo != null && !cie10Codigo.isBlank()) {
+            Cie10 cie10 = cie10Repository.findById(cie10Codigo)
                     .orElseThrow(() -> new ResourceNotFoundException("CIE10 no encontrado"));
 
             diagnostico.setCie10(cie10);
@@ -185,6 +193,13 @@ public class DiagnosticoServiceImpl implements DiagnosticoService{
         historia.addDiagnostico(diagnostico);
 
         return diagnostico;
+    }
+
+    private String getCie10Codigo(com.consultorio.pacientes.dtos.Cie10DTO cie10) {
+        if (cie10 == null) {
+            return null;
+        }
+        return cie10.getCodigo();
     }
 
 

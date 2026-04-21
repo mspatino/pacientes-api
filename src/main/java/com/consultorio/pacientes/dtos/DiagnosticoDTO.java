@@ -23,7 +23,7 @@ public class DiagnosticoDTO {
     private String tratamiento;
 
     private Cie10DTO cie10;
-
+    
     @NotNull(message = "Debe indicar si el diagnóstico es principal")
     private Boolean principal;
 

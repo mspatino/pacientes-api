@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.consultorio.pacientes.dtos.PacienteDTO;
 import com.consultorio.pacientes.dtos.PacienteResponseDTO;
+import com.consultorio.pacientes.dtos.HistoriaClinicaDTO;
 import com.consultorio.pacientes.dtos.HistoriaClinicaResponseDTO;
 import com.consultorio.pacientes.exception.ResourceNotFoundException;
 import com.consultorio.pacientes.services.HistoriaClinicaService;
@@ -88,6 +89,27 @@ public class PacienteController {
                 .obtenerHistoriaPorPaciente(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Historia clínica no encontrada"));
 
+        return ResponseEntity.ok(historia);
+    }
+
+    // Alias para frontend: /api/pacientes/{id}/historia-clinica
+    @PostMapping("/{id}/historia-clinica")
+    public ResponseEntity<HistoriaClinicaResponseDTO> crearHistoriaClinicaPorPaciente(
+            @PathVariable Long id,
+            @RequestBody HistoriaClinicaDTO dto) {
+        HistoriaClinicaResponseDTO historia = historiaClinicaService.crearHistoriaClinica(id, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(historia);
+    }
+
+    // Alias para frontend: /api/pacientes/{id}/historia-clinica
+    @PutMapping("/{id}/historia-clinica")
+    public ResponseEntity<HistoriaClinicaResponseDTO> actualizarHistoriaClinicaPorPaciente(
+            @PathVariable Long id,
+            @RequestBody HistoriaClinicaDTO dto) {
+        HistoriaClinicaResponseDTO historiaExistente = historiaClinicaService
+                .obtenerHistoriaPorPaciente(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Historia clínica no encontrada"));
+        HistoriaClinicaResponseDTO historia = historiaClinicaService.actualizarHistoriaClinica(historiaExistente.getId(), dto);
         return ResponseEntity.ok(historia);
     }
 

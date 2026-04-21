@@ -1,5 +1,6 @@
 package com.consultorio.pacientes.dtos;
 
+import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -23,4 +24,6 @@ public class DiagnosticoUpdateDTO {
     private Cie10DTO cie10;
 
     private Boolean principal;
+
+    private LocalDateTime fechaFin;
 }
