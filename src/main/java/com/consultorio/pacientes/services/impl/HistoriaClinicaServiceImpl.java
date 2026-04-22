@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.consultorio.pacientes.dtos.DiagnosticoDTO;
 import com.consultorio.pacientes.dtos.HistoriaClinicaDTO;
 import com.consultorio.pacientes.dtos.HistoriaClinicaResponseDTO;
-import com.consultorio.pacientes.entities.Diagnostico;
 import com.consultorio.pacientes.entities.HistoriaClinica;
 import com.consultorio.pacientes.entities.Paciente;
 import com.consultorio.pacientes.exception.BusinessException;

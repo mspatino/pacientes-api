@@ -23,13 +23,6 @@ public class PacienteServiceImpl implements PacienteService {
         this.repository = repository;
     }
 
-
-    public Paciente guardar(Paciente paciente) {
-        paciente.setFechaAlta(LocalDateTime.now());
-        return repository.save(paciente);
-
-    }
-
     public PacienteResponseDTO crear(PacienteDTO dto) {
         Paciente saved = repository.save(PacienteMapper.toEntity(dto));
         return PacienteMapper.toDTO(saved);
