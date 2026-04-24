@@ -36,6 +36,7 @@ public class TurnoServiceImpl implements TurnoService {
     @Override
     public TurnoResponseDTO crear(TurnoDTO dto) {
         validarContactoOTPaciente(dto);
+        validarSuperposicion(dto.getFechaHoraInicio(),dto.getDuracionMinutos(),null);
         Turno turno = TurnoMapper.toEntity(dto);
         // Resolver paciente si viene pacienteId
         if (dto.getPacienteId() != null) {
@@ -52,6 +53,7 @@ public class TurnoServiceImpl implements TurnoService {
     @Override
     public TurnoResponseDTO actualizar(Long id, TurnoDTO dto) {
         validarContactoOTPaciente(dto);
+        validarSuperposicion(dto.getFechaHoraInicio(),dto.getDuracionMinutos(),id);
         Turno turno = turnoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Turno no encontrado"));
         Paciente paciente = null;
@@ -70,6 +72,7 @@ public class TurnoServiceImpl implements TurnoService {
                         : 45);
 
         turno.setNotas(dto.getNotas());
+        turno.setEstado(dto.getEstado() != null ? dto.getEstado() : turno.getEstado());
         Turno turnoSaved =  turnoRepository.save(turno);
         return TurnoMapper.toDTO(turnoSaved);
     }
@@ -147,5 +150,74 @@ public class TurnoServiceImpl implements TurnoService {
                     "Debe seleccionar un paciente o ingresar un nombre de contacto");
         }
     }
+
+    private void validarSuperposicion(
+            LocalDateTime inicioNuevo,
+            Integer duracionMinutos,
+            Long turnoIdExcluir) {
+
+        LocalDateTime finNuevo = inicioNuevo.plusMinutes(
+                duracionMinutos != null ? duracionMinutos : 45);
+
+        List<Turno> turnosDelDia = turnoRepository
+                .findByFechaHoraInicioBetweenOrderByFechaHoraInicioAsc(
+                        inicioNuevo.toLocalDate().atStartOfDay(),
+                        inicioNuevo.toLocalDate().atTime(LocalTime.MAX));
+
+        boolean hayConflicto = turnosDelDia.stream()
+                .filter(t -> turnoIdExcluir == null || !t.getId().equals(turnoIdExcluir))
+                .filter(t -> t.getEstado() != EstadoTurno.CANCELADO)
+                .anyMatch(turno -> {
+
+                    LocalDateTime inicioExistente = turno.getFechaHoraInicio();
+
+                    LocalDateTime finExistente = inicioExistente.plusMinutes(
+                            turno.getDuracionMinutos() != null
+                                    ? turno.getDuracionMinutos()
+                                    : 45);
+
+                    return inicioNuevo.isBefore(finExistente)
+                            && finNuevo.isAfter(inicioExistente);
+                });
+
+        if (hayConflicto) {
+            throw new BusinessException(
+                    "Ya existe un turno en ese rango horario");
+        }
+    }
+
+    @Override
+    public TurnoResponseDTO cambiarEstado(Long id, EstadoTurno estado) {
+        Turno turno = turnoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Turno no encontrado"));
+        validarCambioEstado(turno.getEstado(), estado);
+        turno.setEstado(estado);
+        Turno turnoSaved = turnoRepository.save(turno);
+        return TurnoMapper.toDTO(turnoSaved);
+    }
+
+    private void validarCambioEstado(EstadoTurno actual, EstadoTurno nuevo) {
+        if (actual == nuevo) {
+           return;
+        }
+        boolean valido = switch (actual) {
+            case PENDIENTE ->
+                nuevo == EstadoTurno.CONFIRMADO
+                        || nuevo == EstadoTurno.CANCELADO;
+            case CONFIRMADO ->
+                nuevo == EstadoTurno.AUSENTE
+                        || nuevo == EstadoTurno.CANCELADO;
+            case CANCELADO,
+                    AUSENTE ->
+                false;
+        };
+
+        if (!valido) {
+            throw new BusinessException(
+                    "No se puede cambiar el estado de "+ actual+ " a "+ nuevo);
+        }
+    }
+
+
 
 }

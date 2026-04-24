@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.consultorio.pacientes.dtos.TurnoDTO;
 import com.consultorio.pacientes.dtos.TurnoResponseDTO;
-
+import com.consultorio.pacientes.entities.enums.EstadoTurno;
 import com.consultorio.pacientes.services.TurnoService;
 
 import jakarta.validation.Valid;
@@ -78,6 +78,15 @@ public class TurnoController {
     public ResponseEntity<Void> cancelar(@PathVariable Long id) {
         turnoService.cancelar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<TurnoResponseDTO> cambiarEstado(
+            @PathVariable Long id,
+            @RequestParam EstadoTurno estado) {
+
+        return ResponseEntity.ok(
+                turnoService.cambiarEstado(id, estado));
     }
 
 }

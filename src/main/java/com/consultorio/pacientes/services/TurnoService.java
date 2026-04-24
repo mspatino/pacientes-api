@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.consultorio.pacientes.dtos.TurnoDTO;
 import com.consultorio.pacientes.dtos.TurnoResponseDTO;
+import com.consultorio.pacientes.entities.enums.EstadoTurno;
 
 
 public interface TurnoService {
@@ -22,4 +23,6 @@ public interface TurnoService {
     List<TurnoResponseDTO> getTurnosDelMes(int anio, int mes);
 
     void cancelar(Long id);
+
+    TurnoResponseDTO cambiarEstado(Long id, EstadoTurno estado);
 }
