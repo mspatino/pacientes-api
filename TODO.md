@@ -7,3 +7,14 @@
 - [ ] 4. Test POST http://localhost:8080/api/turnos with given JSON.
 - [ ] 5. Mark complete.
 
+
+Paciente
+ └── Historia Clínica
+      ├── Datos clínicos
+      ├── Diagnóstico principal
+      └── Diagnósticos
+
+y toda la administración de diagnósticos:
+alta,edición,baja,principal
+
+hacerla desde: Editar Historia Clínica

@@ -94,10 +94,10 @@ public class Paciente {
     @JsonIgnore
     private HistoriaClinica historiaClinica;
 
-    @ElementCollection
+    @ElementCollection(targetClass = ConvivienteTipo.class)
     @CollectionTable(name = "paciente_convivientes", joinColumns = @JoinColumn(name = "paciente_id"))
     @Enumerated(EnumType.STRING)
-    @Column(name = "conviviente", length = 40)
+    @Column(name = "conviviente")
     @NotEmpty(message = "Debe informar al menos un conviviente")
     private List<ConvivienteTipo> convivientes;
 

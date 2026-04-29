@@ -37,6 +37,7 @@ public class TurnoServiceImpl implements TurnoService {
     public TurnoResponseDTO crear(TurnoDTO dto) {
         validarContactoOTPaciente(dto);
         validarSuperposicion(dto.getFechaHoraInicio(),dto.getDuracionMinutos(),null);
+        validarFechaEditable(dto.getFechaHoraInicio().toLocalDate());
         Turno turno = TurnoMapper.toEntity(dto);
         // Resolver paciente si viene pacienteId
         if (dto.getPacienteId() != null) {
@@ -45,7 +46,7 @@ public class TurnoServiceImpl implements TurnoService {
             turno.setPaciente(paciente);
         }
         // Estado por defecto
-        turno.setEstado(EstadoTurno.PENDIENTE);
+        turno.setEstado(EstadoTurno.CONFIRMADO);
         Turno turnoSaved = turnoRepository.save(turno);
         return TurnoMapper.toDTO(turnoSaved);
     }
@@ -201,9 +202,9 @@ public class TurnoServiceImpl implements TurnoService {
            return;
         }
         boolean valido = switch (actual) {
-            case PENDIENTE ->
-                nuevo == EstadoTurno.CONFIRMADO
-                        || nuevo == EstadoTurno.CANCELADO;
+            // case PENDIENTE ->
+            //     nuevo == EstadoTurno.CONFIRMADO
+            //             || nuevo == EstadoTurno.CANCELADO;
             case CONFIRMADO ->
                 nuevo == EstadoTurno.AUSENTE
                         || nuevo == EstadoTurno.CANCELADO;
@@ -215,6 +216,13 @@ public class TurnoServiceImpl implements TurnoService {
         if (!valido) {
             throw new BusinessException(
                     "No se puede cambiar el estado de "+ actual+ " a "+ nuevo);
+        }
+    }
+
+    private void validarFechaEditable(LocalDate fecha) {
+        if (fecha.isBefore(LocalDate.now())) {
+            throw new BusinessException(
+                    "No se pueden modificar turnos de fechas pasadas");
         }
     }
 
